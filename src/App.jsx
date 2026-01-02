@@ -305,12 +305,8 @@ function App() {
             <nav className="sticky top-0 z-40 bg-[#14181c]/95 backdrop-blur-md border-b border-white/10 px-4 md:px-6 py-3">
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-8">
-                        <div className="text-2xl font-black tracking-tighter cursor-pointer flex items-center gap-1" onClick={handleGoHome}>
-                            <div className="flex gap-1 mr-1">
-                                <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                            </div>
+                        <div className="text-2xl font-black tracking-tighter cursor-pointer flex items-center gap-3" onClick={handleGoHome}>
+                            <img src="/logo192.png" className="w-8 h-8 rounded-lg shadow-lg border border-white/10" alt="Grapevine" />
                             grape<span className="text-white">vine</span>
                         </div>
 
