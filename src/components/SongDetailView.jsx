@@ -153,119 +153,36 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         sparking conversation across the Grapevine community with {songReviews.length} curated reviews.
                     </div>
 
-                    {/* Ratings Section */}
-                    <section className="border-t border-white/5 pt-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Ratings</h2>
-                            <div className="flex items-center gap-2">
-                                <span className="text-2xl font-black text-white">{averageRating}</span>
-                                <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => (
-                                        <Star key={i} size={14} className={i < Math.round(averageRating) ? 'text-lime-400 fill-lime-400' : 'text-gray-800'} />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
 
-                        {/* Histogram */}
-                        <div className="flex items-end gap-1 h-24 mb-2">
-                            {distribution.map((count, i) => (
-                                <div
-                                    key={i}
-                                    className="flex-1 bg-[#2c3440] hover:bg-lime-400 transition-colors rounded-t-sm relative group cursor-help"
-                                    style={{ height: `${(count / maxDist) * 100}%` }}
-                                >
-                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-charcoal text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap font-bold">
-                                        {count} reviews
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex justify-between text-[10px] font-black text-gray-600 tracking-widest px-1">
-                            <span>1 STAR</span>
-                            <span>5 STARS</span>
-                        </div>
 
-                        {/* Concise Music Links */}
-                        <div className="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
-                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Listen on Services</span>
-                            <div className="flex gap-3">
-                                {extraInfo.appleMusicUrl && (
-                                    <a
-                                        href={`${extraInfo.appleMusicUrl}&app=music`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
-                                    >
-                                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg" alt="Apple Music" className="w-5 h-5 invert" />
-                                        <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-lime-400">Apple Music</span>
-                                    </a>
-                                )}
+                    {/* Concise Music Links */}
+                    <div className="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
+                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Listen on Services</span>
+                        <div className="flex gap-3">
+                            {extraInfo.appleMusicUrl && (
                                 <a
-                                    href={window.innerWidth < 768 ? `spotify:search:${encodeURIComponent(post.artist_name + ' ' + post.song_name)}` : extraInfo.spotifyUrl}
+                                    href={`${extraInfo.appleMusicUrl}&app=music`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 bg-[#1DB954]/10 hover:bg-[#1DB954]/20 border border-[#1DB954]/20 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
+                                    className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
                                 >
-                                    <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#1DB954]" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.21.346-.66.452-1.006.242-2.73-1.668-6.17-2.047-10.218-1.122-.396.09-.796-.165-.887-.56-.09-.396.165-.797.56-.888 4.437-1.015 8.237-.585 11.29 1.282.35.213.457.66.247 1.006zm1.465-3.264c-.266.432-.825.572-1.257.306-3.13-1.92-7.9-2.476-11.603-1.353-.487.147-1.005-.13-1.152-.616-.148-.487.13-1.005.617-1.152 4.25-1.29 9.516-.673 13.088 1.52.433.266.574.825.308 1.257zm.126-3.41c-3.754-2.23-9.962-2.435-13.56-.75-.576.176-1.19-.153-1.366-.73-.176-.577.152-1.192.73-1.368 4.14-1.258 11.01-1.015 15.337 1.55.518.307.688.976.38 1.493-.306.52-.975.69-1.49.382z" />
-                                    </svg>
-                                    <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-[#1DB954]">Spotify</span>
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg" alt="Apple Music" className="w-5 h-5 invert" />
+                                    <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-lime-400">Apple Music</span>
                                 </a>
-                            </div>
+                            )}
+                            <a
+                                href={window.innerWidth < 768 ? `spotify:search:${encodeURIComponent(post.artist_name + ' ' + post.song_name)}` : extraInfo.spotifyUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 bg-[#1DB954]/10 hover:bg-[#1DB954]/20 border border-[#1DB954]/20 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
+                            >
+                                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-[#1DB954]" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.21.346-.66.452-1.006.242-2.73-1.668-6.17-2.047-10.218-1.122-.396.09-.796-.165-.887-.56-.09-.396.165-.797.56-.888 4.437-1.015 8.237-.585 11.29 1.282.35.213.457.66.247 1.006zm1.465-3.264c-.266.432-.825.572-1.257.306-3.13-1.92-7.9-2.476-11.603-1.353-.487.147-1.005-.13-1.152-.616-.148-.487.13-1.005.617-1.152 4.25-1.29 9.516-.673 13.088 1.52.433.266.574.825.308 1.257zm.126-3.41c-3.754-2.23-9.962-2.435-13.56-.75-.576.176-1.19-.153-1.366-.73-.176-.577.152-1.192.73-1.368 4.14-1.258 11.01-1.015 15.337 1.55.518.307.688.976.38 1.493-.306.52-.975.69-1.49.382z" />
+                                </svg>
+                                <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-[#1DB954]">Spotify</span>
+                            </a>
                         </div>
-                    </section>
-
-                    {/* Reviews Feed */}
-                    <section className="space-y-6">
-                        <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 pb-2 border-b border-white/5">Reviews from friends</h2>
-                        {songReviews.length > 0 ? (
-                            <div className="space-y-6">
-                                {songReviews.map(r => (
-                                    <div key={r.id} className="border-b border-white/5 pb-8">
-                                        <div
-                                            className="flex items-center gap-3 mb-4 cursor-pointer group/user"
-                                            onClick={() => onSelectProfile({ id: r.user_id, user_name: r.user_name })}
-                                        >
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-charcoal font-black group-hover/user:ring-2 group-hover/user:ring-lime-400 transition">
-                                                {r.user_name?.[0].toUpperCase()}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-white uppercase text-xs tracking-widest group-hover/user:text-lime-400 transition">{r.user_name}</span>
-                                                    <div className="flex gap-0.5">
-                                                        {[...Array(5)].map((_, i) => {
-                                                            const starValue = i + 1;
-                                                            const isFull = starValue <= r.rating;
-                                                            const isHalf = !isFull && starValue - 0.5 === r.rating;
-                                                            return (
-                                                                <div key={i} className="relative">
-                                                                    <Star size={8} className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-800'} ${isFull ? 'fill-lime-400' : ''}`} />
-                                                                    {isHalf && (
-                                                                        <div className="absolute inset-0 overflow-hidden w-[50%]">
-                                                                            <Star size={8} className="text-lime-400 fill-lime-400" />
-                                                                        </div>
-                                                                    )}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                </div>
-                                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Logged Recently</p>
-                                            </div>
-                                        </div>
-                                        <p className="text-gray-300 leading-relaxed mb-4">{r.caption}</p>
-                                        <CommentSection postId={r.id} currentUser={currentUser} />
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
-                                <p className="text-gray-500 italic">No one has reviewed this yet.</p>
-                                <button onClick={() => { const { id, ...cleanPost } = post; onRate(cleanPost); }} className="mt-4 text-lime-400 font-bold hover:underline">Log your review</button>
-                            </div>
-                        )}
-                    </section>
+                    </div>
                 </div>
 
                 {/* Right Column: Sidebar Actions */}
@@ -293,27 +210,60 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         <Plus size={18} />
                         Add to list
                     </button>
-
-
-
-                    <div className="bg-[#1a1f26] rounded-2xl p-6 border border-white/5">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4">Song Stats</h3>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-gray-400">Reviews</span>
-                                <span className="text-xs font-black text-white">{songReviews.length}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-gray-400">Average</span>
-                                <span className="text-xs font-black text-lime-400">{averageRating}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <span className="text-xs font-bold text-gray-400">Popularity</span>
-                                <span className="text-xs font-black text-white">#4 this week</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
+            </div>
+
+            <div className="max-w-4xl mx-auto px-6 mt-16 pb-32">
+                {/* Reviews Feed */}
+                <section className="space-y-6">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-8 pb-2 border-b border-white/5">Reviews from friends</h2>
+                    {songReviews.length > 0 ? (
+                        <div className="space-y-6">
+                            {songReviews.map(r => (
+                                <div key={r.id} className="border-b border-white/5 pb-8">
+                                    <div
+                                        className="flex items-center gap-3 mb-4 cursor-pointer group/user"
+                                        onClick={() => onSelectProfile({ id: r.user_id, user_name: r.user_name })}
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-charcoal font-black group-hover/user:ring-2 group-hover/user:ring-lime-400 transition">
+                                            {r.user_name?.[0].toUpperCase()}
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-bold text-white uppercase text-xs tracking-widest group-hover/user:text-lime-400 transition">{r.user_name}</span>
+                                                <div className="flex gap-0.5">
+                                                    {[...Array(5)].map((_, i) => {
+                                                        const starValue = i + 1;
+                                                        const isFull = starValue <= r.rating;
+                                                        const isHalf = !isFull && starValue - 0.5 === r.rating;
+                                                        return (
+                                                            <div key={i} className="relative">
+                                                                <Star size={8} className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-800'} ${isFull ? 'fill-lime-400' : ''}`} />
+                                                                {isHalf && (
+                                                                    <div className="absolute inset-0 overflow-hidden w-[50%]">
+                                                                        <Star size={8} className="text-lime-400 fill-lime-400" />
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Logged Recently</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-gray-300 leading-relaxed mb-4">{r.caption}</p>
+                                    <CommentSection postId={r.id} currentUser={currentUser} />
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
+                            <p className="text-gray-500 italic">No one has reviewed this yet.</p>
+                            <button onClick={() => { const { id, ...cleanPost } = post; onRate(cleanPost); }} className="mt-4 text-lime-400 font-bold hover:underline">Log your review</button>
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

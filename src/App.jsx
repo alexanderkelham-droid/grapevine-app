@@ -80,8 +80,25 @@ function App() {
 
     const fetchPosts = async () => {
         if (!supabase) { setPosts(SAMPLE_POSTS); return; }
-        const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-        if (data) setPosts(data);
+
+        // Fetch posts and profiles separately to avoid join errors
+        const [{ data: postData }, { data: profData }] = await Promise.all([
+            supabase.from('posts').select('*').order('created_at', { ascending: false }),
+            supabase.from('profiles').select('id, avatar_url')
+        ]);
+
+        if (postData) {
+            // Map avatars to posts
+            const avatarMap = (profData || []).reduce((acc, p) => ({ ...acc, [p.id]: p.avatar_url }), {});
+            const merged = postData.map(p => ({
+                ...p,
+                avatar_url: avatarMap[p.user_id]
+            }));
+
+            // Apply blocklist
+            const BLOCKED_NAMES = ['jade', 'music', 'miles', 'beats', 'curator'];
+            setPosts(merged.filter(p => !BLOCKED_NAMES.some(name => p.user_name?.toLowerCase().includes(name))));
+        }
     };
 
     const fetchFollowing = async () => {

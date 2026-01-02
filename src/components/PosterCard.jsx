@@ -35,7 +35,11 @@ const PosterCard = ({ post, onClick, showUser = true }) => {
                 <div className="px-1">
                     <div className="flex items-center gap-2 mb-1">
                         <div className="w-5 h-5 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-[10px] font-bold text-charcoal overflow-hidden shrink-0">
-                            {post.user_name?.[0].toUpperCase()}
+                            {post.avatar_url ? (
+                                <img src={post.avatar_url} className="w-full h-full object-cover" />
+                            ) : (
+                                post.user_name?.[0].toUpperCase()
+                            )}
                         </div>
                         <span className="text-[10px] font-bold text-gray-400 truncate hover:text-white transition">{post.user_name}</span>
                     </div>
