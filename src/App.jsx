@@ -306,8 +306,8 @@ function App() {
                 <div className="max-w-4xl mx-auto flex items-center justify-between">
                     <div className="flex items-center gap-8">
                         <div className="text-2xl font-black tracking-tighter cursor-pointer flex items-center gap-3" onClick={handleGoHome}>
-                            <img src="/logo192.png" className="w-8 h-8 rounded-lg shadow-lg border border-white/10" alt="Grapevine" />
-                            grape<span className="text-white">vine</span>
+                            <img src="/logo192.png" className="w-8 h-8" alt="Grapevine" />
+                            <span>grape<span className="text-white">vine</span></span>
                         </div>
 
                         <div className="hidden md:flex items-center gap-6">
