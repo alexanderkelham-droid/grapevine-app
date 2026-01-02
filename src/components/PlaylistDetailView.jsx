@@ -8,7 +8,7 @@ const PlaylistDetailView = ({ playlist, items, onBack, onPlaySong, onRemoveSong,
     return (
         <div className="animate-in slide-in-from-right duration-300 min-h-screen bg-[#14181c] relative z-50 pb-20">
             {/* Header / Hero */}
-            <div className="relative w-full h-80 overflow-hidden">
+            <div className="relative w-full min-h-[500px] flex flex-col">
                 <div className="absolute inset-0 bg-cover bg-center blur-2xl opacity-40 scale-110"
                     style={{ backgroundImage: `url(${items[0]?.album_art_url || ''})` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#14181c] via-[#14181c]/60 to-transparent"></div>
@@ -17,8 +17,8 @@ const PlaylistDetailView = ({ playlist, items, onBack, onPlaySong, onRemoveSong,
                     <ChevronDown className="rotate-90" size={24} />
                 </button>
 
-                <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col sm:flex-row items-center sm:items-end gap-6 max-w-2xl mx-auto z-10">
-                    <div className="shrink-0 w-48 h-48 rounded-lg shadow-2xl overflow-hidden bg-gray-800 grid grid-cols-2 grid-rows-2 gap-0.5 border border-white/10">
+                <div className="relative mt-auto w-full p-6 flex flex-col sm:flex-row items-center sm:items-end gap-6 max-w-2xl mx-auto z-10 pt-24">
+                    <div className="shrink-0 w-48 h-48 rounded-2xl shadow-2xl overflow-hidden bg-gray-800 grid grid-cols-2 grid-rows-2 gap-0.5 border border-white/10">
                         {covers.length > 0 ? (
                             [0, 1, 2, 3].map(i => (
                                 <div key={i} className="bg-gray-700">
@@ -31,7 +31,7 @@ const PlaylistDetailView = ({ playlist, items, onBack, onPlaySong, onRemoveSong,
                             </div>
                         )}
                     </div>
-                    <div className="mb-2 text-center sm:text-left flex-1 relative">
+                    <div className="mb-2 text-center sm:text-left flex-1">
                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-lime-400 mb-2 block">Playlist</span>
                         <h1 className="text-4xl sm:text-5xl font-black text-white leading-tight tracking-tighter">{playlist.title}</h1>
                         <p className="text-gray-400 mt-2 font-medium">{items.length} songs • Created by you</p>
