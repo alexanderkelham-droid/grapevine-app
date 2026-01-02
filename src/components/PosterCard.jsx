@@ -2,9 +2,22 @@ import { Star } from 'lucide-react';
 
 const PosterCard = ({ post, onClick, showUser = true }) => {
     const renderStars = (rating) => {
-        return [...Array(5)].map((_, i) => (
-            <Star key={i} size={10} className={`${i < rating ? 'text-lime-400 fill-lime-400' : 'text-gray-600'}`} />
-        ));
+        return [...Array(5)].map((_, i) => {
+            const starValue = i + 1;
+            const isFull = starValue <= rating;
+            const isHalf = !isFull && starValue - 0.5 === rating;
+
+            return (
+                <div key={i} className="relative">
+                    <Star size={10} className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-600'} ${isFull ? 'fill-lime-400' : ''}`} />
+                    {isHalf && (
+                        <div className="absolute inset-0 overflow-hidden w-[50%]">
+                            <Star size={10} className="text-lime-400 fill-lime-400" />
+                        </div>
+                    )}
+                </div>
+            );
+        });
     };
 
     return (

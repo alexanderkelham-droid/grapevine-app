@@ -120,9 +120,22 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                             </div>
                             <span className="text-sm font-bold text-gray-300">You've logged this song</span>
                             <div className="ml-auto text-lime-400 flex gap-0.5">
-                                {[...Array(5)].map((_, i) => (
-                                    <Star key={i} size={12} className={i < (songReviews.find(r => r.user_id === currentUser.id)?.rating || 0) ? 'fill-lime-400' : 'text-gray-700'} />
-                                ))}
+                                {[...Array(5)].map((_, i) => {
+                                    const rating = songReviews.find(r => r.user_id === currentUser.id)?.rating || 0;
+                                    const starValue = i + 1;
+                                    const isFull = starValue <= rating;
+                                    const isHalf = !isFull && starValue - 0.5 === rating;
+                                    return (
+                                        <div key={i} className="relative">
+                                            <Star size={12} className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-700'} ${isFull ? 'fill-lime-400' : ''}`} />
+                                            {isHalf && (
+                                                <div className="absolute inset-0 overflow-hidden w-[50%]">
+                                                    <Star size={12} className="text-lime-400 fill-lime-400" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
@@ -201,9 +214,21 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                                                 <div className="flex items-center gap-2">
                                                     <span className="font-bold text-white uppercase text-xs tracking-widest">{r.user_name}</span>
                                                     <div className="flex gap-0.5">
-                                                        {[...Array(5)].map((_, i) => (
-                                                            <Star key={i} size={8} className={i < r.rating ? 'text-lime-400 fill-lime-400' : 'text-gray-800'} />
-                                                        ))}
+                                                        {[...Array(5)].map((_, i) => {
+                                                            const starValue = i + 1;
+                                                            const isFull = starValue <= r.rating;
+                                                            const isHalf = !isFull && starValue - 0.5 === r.rating;
+                                                            return (
+                                                                <div key={i} className="relative">
+                                                                    <Star size={8} className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-800'} ${isFull ? 'fill-lime-400' : ''}`} />
+                                                                    {isHalf && (
+                                                                        <div className="absolute inset-0 overflow-hidden w-[50%]">
+                                                                            <Star size={8} className="text-lime-400 fill-lime-400" />
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            );
+                                                        })}
                                                     </div>
                                                 </div>
                                                 <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Logged Recently</p>

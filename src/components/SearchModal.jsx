@@ -100,8 +100,40 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                             </div>
                             {mode === 'REVIEW' && (
                                 <div className="space-y-6">
-                                    <div className="flex justify-center gap-4">
-                                        {[1, 2, 3, 4, 5].map(n => <Star key={n} size={40} onClick={() => setRating(n)} className={`cursor-pointer transition-all hover:scale-110 active:scale-90 ${n <= rating ? 'fill-lime-400 text-lime-400 drop-shadow-[0_0_8px_rgba(163,230,53,0.4)]' : 'text-gray-800'}`} />)}
+                                    <div className="flex justify-center gap-1">
+                                        {[1, 2, 3, 4, 5].map(n => {
+                                            const isFull = n <= rating;
+                                            const isHalf = n - 0.5 === rating;
+                                            return (
+                                                <div key={n} className="relative group/star cursor-pointer transition-all hover:scale-110 active:scale-95">
+                                                    {/* The Star Icon background */}
+                                                    <Star
+                                                        size={40}
+                                                        className={`${isFull || isHalf ? 'text-lime-400' : 'text-gray-800'} ${isFull ? 'fill-lime-400' : ''}`}
+                                                    />
+
+                                                    {/* Half Star Overlay for display */}
+                                                    {isHalf && (
+                                                        <div className="absolute inset-0 overflow-hidden w-[50%]">
+                                                            <Star size={40} className="text-lime-400 fill-lime-400" />
+                                                        </div>
+                                                    )}
+
+                                                    {/* Click areas for half and full */}
+                                                    <div className="absolute inset-0 flex">
+                                                        <div
+                                                            className="h-full w-1/2"
+                                                            onClick={() => setRating(n - 0.5)}
+                                                            onMouseEnter={() => !rating && setRating(n - 0.5)} // Pre-view effect optional
+                                                        />
+                                                        <div
+                                                            className="h-full w-1/2"
+                                                            onClick={() => setRating(n)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                     <textarea className="w-full h-32 bg-[#121212] p-4 rounded-2xl border border-white/10 text-white placeholder-gray-700 focus:outline-none focus:border-lime-400/50 transition resize-none font-medium" placeholder="What's the vibe? Tell them how it makes you feel..." value={comment} onChange={e => setComment(e.target.value)} />
                                 </div>

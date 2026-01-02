@@ -126,12 +126,16 @@ function App() {
         }
     };
 
-    const handleCreatePlaylist = async () => {
-        const title = prompt("Name your playlist:");
-        if (!title) return;
+    const handleCreatePlaylist = async (title) => {
+        if (!title || !title.trim()) return;
         if (!supabase) return;
-        await supabase.from('playlists').insert([{ user_id: session.user.id, title, description: "New collection" }]);
+        await supabase.from('playlists').insert([{
+            user_id: session.user.id,
+            title: title.trim(),
+            description: "Custom collection"
+        }]);
         setToastMessage("Playlist created!");
+        fetchPlaylists();
     };
 
     const handleRateFromSong = (song) => {
@@ -217,7 +221,14 @@ function App() {
     const modals = (
         <>
             <SearchModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmitReview={handleModalSubmit} mode={modalMode} preSelectedSong={modalPreSelectedSong} />
-            <AddToPlaylistModal isOpen={isPlaylistModalOpen} onClose={() => setIsPlaylistModalOpen(false)} song={songToAdd} playlists={playlists} onAddToPlaylist={handleAddSongToPlaylist} />
+            <AddToPlaylistModal
+                isOpen={isPlaylistModalOpen}
+                onClose={() => setIsPlaylistModalOpen(false)}
+                song={songToAdd}
+                playlists={playlists}
+                onAddToPlaylist={handleAddSongToPlaylist}
+                onCreatePlaylist={handleCreatePlaylist}
+            />
             {toastMessage && <Toast message={toastMessage} onClose={() => setToastMessage(null)} />}
         </>
     );
