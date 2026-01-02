@@ -28,12 +28,12 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
         let songs = [];
         let people = [];
         try {
-            // 1. Search Songs (iTunes)
-            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=25`, {
-                headers: {
-                    'Accept': 'application/json',
-                }
-            });
+            const isLocal = window.location.hostname === 'localhost';
+            const url = isLocal
+                ? `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=25`
+                : `/api/search?q=${encodeURIComponent(query)}`;
+
+            const songRes = await fetch(url);
 
             if (!songRes.ok) {
                 throw new Error(`Cloud API Error: ${songRes.status}`);

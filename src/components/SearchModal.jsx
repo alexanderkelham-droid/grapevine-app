@@ -29,10 +29,13 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
         if (e.target.value.length < 2) return;
         setSearching(true);
         try {
-            const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10`, {
-                headers: { 'Accept': 'application/json' }
-            });
-            if (!res.ok) throw new Error(`iTunes API failed: ${res.status}`);
+            const isLocal = window.location.hostname === 'localhost';
+            const url = isLocal
+                ? `https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10`
+                : `/api/search?q=${encodeURIComponent(e.target.value)}`;
+
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`API failed: ${res.status}`);
             const data = await res.json();
             if (data.results) {
                 setResults(data.results.map(t => ({
