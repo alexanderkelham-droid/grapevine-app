@@ -362,7 +362,7 @@ function App() {
                             </div>
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                                 {[...posts]
-                                    .filter(p => !p.id.startsWith('sample-'))
+                                    .filter(p => !String(p.id).startsWith('sample-'))
                                     .reverse()
                                     .slice(0, 6)
                                     .map(post => (
