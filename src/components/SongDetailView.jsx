@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, PlayCircle, Star, Plus, Headphones } from 'lucide-react';
+import { ChevronDown, PlayCircle, Star, Plus, Headphones, Music } from 'lucide-react';
 import CommentSection from './CommentSection';
 
 const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPlaylist }) => {
@@ -71,20 +71,20 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
     const hasLogged = !!userReview;
 
     return (
-        <div className="animate-in fade-in slide-in-from-right-12 duration-500 min-h-screen bg-[#14181c] relative z-50 pb-20 overflow-x-hidden">
+        <div className="animate-in fade-in slide-in-from-right-12 duration-500 min-h-screen bg-[#14181c] relative z-50 pb-32 overflow-x-hidden">
             {/* Cinematic Backdrop */}
-            <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
+            <div className="relative w-full min-h-[70vh] md:h-[60vh] overflow-hidden flex flex-col">
                 <div className="absolute inset-0 z-0">
                     <img src={post.album_art_url} className="w-full h-full object-cover blur-md opacity-40 scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#14181c]/80 to-[#14181c]"></div>
                 </div>
 
-                <div className="relative z-10 max-w-4xl mx-auto h-full px-6 flex flex-col justify-end pb-12">
+                <div className="relative z-10 max-w-4xl mx-auto w-full h-full px-6 flex flex-col pt-24 pb-12 flex-1 justify-center md:justify-end">
                     <button onClick={() => { if (audioRef.current) audioRef.current.pause(); onBack(); }} className="absolute top-6 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10"><ChevronDown className="rotate-90" size={24} /></button>
 
-                    <div className="flex flex-col md:flex-row gap-8 items-center md:items-end">
-                        {/* Poster Card - Always visible now */}
-                        <div className="w-48 aspect-[2/3] md:w-48 bg-[#202020] rounded-lg shadow-2xl overflow-hidden border border-white/10 shrink-0 transform md:rotate-2 hover:rotate-0 transition duration-500 group relative order-2 md:order-1">
+                    <div className="flex flex-col md:flex-row gap-8 items-center md:items-end w-full">
+                        {/* Poster Card */}
+                        <div className="w-56 aspect-[2/3] md:w-48 bg-[#202020] rounded-lg shadow-2xl overflow-hidden border border-white/10 shrink-0 transform md:rotate-2 hover:rotate-0 transition duration-500 group relative">
                             <img src={post.album_art_url} className="w-full h-full object-cover" />
                             <div onClick={togglePlay} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
                                 {isPlaying ? <Headphones className="text-lime-400 animate-pulse" size={48} /> : <PlayCircle className="text-white" size={48} />}
@@ -95,7 +95,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                             </div>
                         </div>
 
-                        <div className="flex-1 text-center md:text-left order-1 md:order-2">
+                        <div className="flex-1 text-center md:text-left">
                             <h1 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter mb-4">{post.song_name}</h1>
                             <div className="flex items-center justify-center md:justify-start gap-4 text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] md:text-sm">
                                 <span>{extraInfo.year}</span>
@@ -109,7 +109,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 </div>
             </div>
 
-            <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div className="max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 mt-8">
                 {/* Left Column: Stats & Reviews */}
                 <div className="md:col-span-2 space-y-12">
                     {/* Logged Status Bar */}
@@ -225,17 +225,34 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                     </button>
 
                     <div className="bg-[#1a1f26] rounded-2xl p-6 border border-white/5">
-                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">Where to listen</h3>
-                        <div className="space-y-3">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">Listen on</h3>
+                        <div className="flex gap-4">
                             {extraInfo.appleMusicUrl && (
-                                <a href={extraInfo.appleMusicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition group">
-                                    <span className="text-xs font-bold text-gray-300">Apple Music</span>
-                                    <Plus size={16} className="text-gray-500 group-hover:text-white" />
+                                <a
+                                    href={extraInfo.appleMusicUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 aspect-square bg-[#fa243c] rounded-2xl flex items-center justify-center hover:scale-105 transition shadow-lg shadow-[#fa243c]/20 group"
+                                    title="Open on Apple Music"
+                                >
+                                    <div className="w-8 h-8 flex items-center justify-center">
+                                        {/* Simple stylized Apple-ish icon/text for now */}
+                                        <Music size={24} className="text-white" />
+                                    </div>
                                 </a>
                             )}
-                            <a href={extraInfo.spotifyUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition group">
-                                <span className="text-xs font-bold text-gray-300">Spotify</span>
-                                <Plus size={16} className="text-gray-500 group-hover:text-white" />
+                            <a
+                                href={extraInfo.spotifyUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 aspect-square bg-[#1DB954] rounded-2xl flex items-center justify-center hover:scale-105 transition shadow-lg shadow-[#1DB954]/20 group"
+                                title="Open on Spotify"
+                            >
+                                <div className="w-8 h-8 flex items-center justify-center">
+                                    <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
+                                        <div className="w-3 h-0.5 bg-white rotate-[-30deg]"></div>
+                                    </div>
+                                </div>
                             </a>
                         </div>
                     </div>
