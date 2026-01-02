@@ -13,7 +13,7 @@ const PlaylistDetailView = ({ playlist, items, onBack, onPlaySong, onRemoveSong,
                     style={{ backgroundImage: `url(${items[0]?.album_art_url || ''})` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#14181c] via-[#14181c]/60 to-transparent"></div>
 
-                <button onClick={onBack} className="absolute top-6 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10">
+                <button onClick={onBack} className="absolute top-12 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10">
                     <ChevronDown className="rotate-90" size={24} />
                 </button>
 

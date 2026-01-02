@@ -85,7 +85,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 </div>
 
                 <div className="relative z-10 max-w-4xl mx-auto w-full h-full px-6 flex flex-col pt-24 pb-12 flex-1 justify-center md:justify-end">
-                    <button onClick={() => { if (audioRef.current) audioRef.current.pause(); onBack(); }} className="absolute top-6 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10"><ChevronDown className="rotate-90" size={24} /></button>
+                    <button onClick={() => { if (audioRef.current) audioRef.current.pause(); onBack(); }} className="absolute top-12 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10"><ChevronDown className="rotate-90" size={24} /></button>
 
                     <div className="flex flex-col md:flex-row gap-8 items-center md:items-end w-full">
                         {/* Poster Card */}

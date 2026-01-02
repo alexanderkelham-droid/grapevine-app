@@ -391,13 +391,35 @@ function App() {
                             <div className="grid grid-cols-2 gap-4">
                                 {playlists.slice(0, 2).map(playlist => {
                                     const items = playlistItems[playlist.id] || [];
-                                    const covers = items.slice(0, 4).map(item => item.album_art_url).filter(Boolean);
+                                    const covers = items.filter(item => item.album_art_url).map(item => item.album_art_url).slice(0, 4);
                                     return (
-                                        <div key={playlist.id} onClick={() => setActivePlaylist(playlist)} className="group relative aspect-video bg-white/5 rounded-xl flex flex-col justify-end p-4 border border-white/5 hover:border-lime-400 transition cursor-pointer overflow-hidden">
-                                            {covers[0] && <img src={covers[0]} className="absolute inset-0 w-full h-full object-cover blur-sm opacity-20 group-hover:scale-110 transition duration-700" alt="" />}
-                                            <div className="relative z-10">
-                                                <h3 className="font-bold text-white group-hover:text-lime-400 transition">{playlist.title}</h3>
-                                                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mt-1">{items.length} songs</p>
+                                        <div
+                                            key={playlist.id}
+                                            onClick={() => setActivePlaylist(playlist)}
+                                            className="group flex flex-col gap-3 cursor-pointer"
+                                        >
+                                            <div className="relative aspect-square bg-[#202020] rounded-2xl overflow-hidden border border-white/5 group-hover:border-lime-400/50 transition shadow-2xl">
+                                                <div className="grid grid-cols-2 grid-rows-2 h-full w-full gap-0.5">
+                                                    {[...Array(4)].map((_, i) => (
+                                                        <div key={i} className="bg-white/5 overflow-hidden">
+                                                            {covers[i] ? (
+                                                                <img src={covers[i]} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="" />
+                                                            ) : (
+                                                                <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                                    <Music size={14} className="text-gray-800" />
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition duration-500"></div>
+                                                <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition">
+                                                    <Music size={10} className="text-lime-400" />
+                                                </div>
+                                            </div>
+                                            <div className="px-1">
+                                                <h3 className="font-bold text-white group-hover:text-lime-400 transition truncate text-xs">{playlist.title}</h3>
+                                                <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mt-1">{items.length} TRACKS</p>
                                             </div>
                                         </div>
                                     );

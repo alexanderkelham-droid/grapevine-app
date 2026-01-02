@@ -340,22 +340,46 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
                     <div className="grid grid-cols-2 gap-4">
                         {userPlaylists.map(playlist => {
                             const items = userPlaylistItems[playlist.id] || [];
-                            const covers = items.slice(0, 4).map(item => item.album_art_url).filter(Boolean);
+                            const covers = items.filter(item => item.album_art_url).map(item => item.album_art_url).slice(0, 4);
                             return (
                                 <div
                                     key={playlist.id}
                                     onClick={() => onSelectPlaylist(playlist)}
-                                    className="group relative aspect-video bg-white/5 rounded-2xl flex flex-col justify-end p-5 border border-white/5 hover:border-lime-400/50 transition cursor-pointer overflow-hidden shadow-xl"
+                                    className="group flex flex-col gap-3 cursor-pointer"
                                 >
-                                    {covers[0] && (
-                                        <img src={covers[0]} className="absolute inset-0 w-full h-full object-cover blur-md opacity-30 group-hover:scale-110 transition duration-700" alt="" />
-                                    )}
-                                    <div className="relative z-10">
-                                        <h3 className="font-black text-white group-hover:text-lime-400 transition tracking-tight">{playlist.title}</h3>
-                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black mt-1">{items.length} songs</p>
+                                    <div className="relative aspect-square bg-[#202020] rounded-2xl overflow-hidden border border-white/5 group-hover:border-lime-400/50 transition shadow-2xl">
+                                        <div className="grid grid-cols-2 grid-rows-2 h-full w-full gap-0.5">
+                                            {[...Array(4)].map((_, i) => (
+                                                <div key={i} className="bg-white/5 overflow-hidden">
+                                                    {covers[i] ? (
+                                                        <img src={covers[i]} className="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="" />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-white/5">
+                                                            <Music size={16} className="text-gray-800" />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition duration-500"></div>
+                                        {covers.length === 0 && (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm">
+                                                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
+                                                    <Music size={24} className="text-gray-600" />
+                                                </div>
+                                            </div>
+                                        )}
+                                        <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-md p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition">
+                                            <Music size={12} className="text-lime-400" />
+                                        </div>
                                     </div>
-                                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition">
-                                        <Music size={14} className="text-lime-400" />
+                                    <div className="px-1">
+                                        <h3 className="font-bold text-white group-hover:text-lime-400 transition truncate text-sm">{playlist.title}</h3>
+                                        <div className="flex items-center gap-1.5 mt-1">
+                                            <span className="text-[9px] text-gray-500 uppercase font-black tracking-widest">{items.length} TRACKS</span>
+                                            <span className="w-0.5 h-0.5 rounded-full bg-gray-700"></span>
+                                            <span className="text-[9px] text-gray-500 uppercase font-black tracking-widest">CURATED BY {profile.user_name || 'YOU'}</span>
+                                        </div>
                                     </div>
                                 </div>
                             );
