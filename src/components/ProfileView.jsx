@@ -209,7 +209,7 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
             setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
         } catch (e) {
             console.error(e);
-            alert("To upload images, please make sure you have a public bucket named 'avatars' in your Supabase storage.");
+            alert("Storage Error: Please ensure you've run the 'Storage Setup' SQL in Supabase. \n\nGo to the SQL Editor and run:\n\ninsert into storage.buckets (id, name, public) values ('avatars', 'avatars', true);\n\ncreate policy \"Public Access\" on storage.objects for all using ( bucket_id = 'avatars' ) with check ( bucket_id = 'avatars' );");
         } finally {
             setUploading(false);
         }
