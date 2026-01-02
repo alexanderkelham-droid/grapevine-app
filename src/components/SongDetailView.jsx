@@ -18,7 +18,12 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
     useEffect(() => {
         const fetchExtra = async () => {
             const query = encodeURIComponent(`${post.artist_name} ${post.song_name}`);
-            const res = await fetch(`https://itunes.apple.com/search?term=${query}&media=music&entity=song&limit=1`);
+            const isLocal = window.location.hostname === 'localhost';
+            const url = isLocal
+                ? `https://itunes.apple.com/search?term=${query}&media=music&entity=song&limit=1`
+                : `/api/search?q=${query}`;
+
+            const res = await fetch(url);
             const data = await res.json();
             if (data.results?.[0]) {
                 const track = data.results[0];

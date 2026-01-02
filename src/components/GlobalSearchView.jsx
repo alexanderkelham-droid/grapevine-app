@@ -51,23 +51,18 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
 
             // 2. Search People 
             if (supabase) {
-                const { data } = await supabase
-                    .from('posts')
-                    .select('user_id, user_name')
+                const { data: profData } = await supabase
+                    .from('profiles')
+                    .select('id, user_name, avatar_url')
                     .ilike('user_name', `%${query}%`);
 
-                if (data) {
-                    const uniquePeople = {};
-                    data.forEach(p => {
-                        if (!uniquePeople[p.user_id]) {
-                            uniquePeople[p.user_id] = {
-                                id: p.user_id,
-                                user_name: p.user_name,
-                                type: 'PERSON'
-                            };
-                        }
-                    });
-                    people = Object.values(uniquePeople);
+                if (profData) {
+                    people = profData.map(p => ({
+                        id: p.id,
+                        user_name: p.user_name,
+                        avatar_url: p.avatar_url,
+                        type: 'PERSON'
+                    }));
                 }
             }
         } catch (e) {
@@ -159,8 +154,12 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                                             onClick={() => onSelectProfile(person)}
                                             className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-2xl cursor-pointer group transition border border-transparent hover:border-white/5"
                                         >
-                                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-xl font-black text-charcoal shadow-lg shrink-0">
-                                                {person.user_name?.[0].toUpperCase()}
+                                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-xl font-black text-charcoal shadow-lg shrink-0 overflow-hidden">
+                                                {person.avatar_url ? (
+                                                    <img src={person.avatar_url} className="w-full h-full object-cover" />
+                                                ) : (
+                                                    person.user_name?.[0].toUpperCase()
+                                                )}
                                             </div>
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-bold text-white group-hover:text-lime-400 transition">{person.user_name}</h4>
