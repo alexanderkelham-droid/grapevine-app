@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Loader2, LogOut, Search } from 'lucide-react';
+import { Plus, Loader2, LogOut, Search, Home, Library, User } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Import refactored components
@@ -406,6 +406,26 @@ function App() {
             </main>
 
             {modals}
+
+            {/* Mobile Bottom Navigation */}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#1a1f26]/95 backdrop-blur-xl border-t border-white/5 py-4 px-8 flex justify-between items-center z-[60] pb-safe">
+                <button onClick={handleGoHome} className={`flex flex-col items-center gap-1 ${view === 'HOME' ? 'text-lime-400' : 'text-gray-500'}`}>
+                    <Home size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Home</span>
+                </button>
+                <button onClick={() => setView('SEARCH')} className={`flex flex-col items-center gap-1 ${view === 'SEARCH' ? 'text-lime-400' : 'text-gray-500'}`}>
+                    <Search size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Search</span>
+                </button>
+                <button onClick={() => setView('PLAYLISTS')} className={`flex flex-col items-center gap-1 ${view === 'PLAYLISTS' ? 'text-lime-400' : 'text-gray-500'}`}>
+                    <Library size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Library</span>
+                </button>
+                <button onClick={() => { setTargetProfile(null); setView('PROFILE'); }} className={`flex flex-col items-center gap-1 ${view === 'PROFILE' ? 'text-lime-400' : 'text-gray-500'}`}>
+                    <User size={20} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Profile</span>
+                </button>
+            </nav>
         </div >
     );
 }
