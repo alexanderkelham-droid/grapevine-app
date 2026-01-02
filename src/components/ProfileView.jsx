@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, Plus, Music, Headphones, X, User as UserIcon, Camera, Edit2, Check, Loader2 } from 'lucide-react';
+import { LogOut, Plus, Music, Headphones, X, User as UserIcon, Camera, Edit2, Check, Loader2, Bell } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import PosterCard from './PosterCard';
 
@@ -19,6 +19,31 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState('');
     const [uploading, setUploading] = useState(false);
+
+    const testNotifications = async () => {
+        if (!("Notification" in window)) {
+            alert("This browser does not support notifications.");
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                registration.showNotification("Grapevine Test", {
+                    body: "Push notifications are active!",
+                    icon: "/logo192.png",
+                    vibrate: [200, 100, 200]
+                });
+            } else {
+                new Notification("Grapevine Test", {
+                    body: "Local notifications are working (Service worker not found)."
+                });
+            }
+        } else {
+            alert("Notification permission denied.");
+        }
+    };
 
     useEffect(() => {
         // Reset state when user changes to prevent data leakage
@@ -288,12 +313,20 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
 
                     <div className="flex items-center gap-3">
                         {isOwnProfile ? (
-                            <button
-                                onClick={onLogout}
-                                className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
-                            >
-                                <LogOut size={12} /> Sign Out
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={onLogout}
+                                    className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+                                >
+                                    <LogOut size={12} /> Sign Out
+                                </button>
+                                <button
+                                    onClick={testNotifications}
+                                    className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+                                >
+                                    <Bell size={12} /> Push Test
+                                </button>
+                            </div>
                         ) : (
                             <button
                                 onClick={() => handleFollow(user.id, isFollowing)}
