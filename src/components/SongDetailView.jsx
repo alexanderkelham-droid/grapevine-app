@@ -6,7 +6,14 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(post.preview_url);
-    const [extraInfo, setExtraInfo] = useState({ year: '----', genre: 'Music', duration: '--:--', album: 'their latest project' });
+    const [extraInfo, setExtraInfo] = useState({
+        year: '----',
+        genre: 'Music',
+        duration: '--:--',
+        album: 'their latest project',
+        appleMusicUrl: null,
+        spotifyUrl: `https://open.spotify.com/search/${encodeURIComponent(post.artist_name + ' ' + post.song_name)}`
+    });
 
     useEffect(() => {
         const fetchExtra = async () => {
@@ -20,12 +27,14 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 const minutes = Math.floor(track.trackTimeMillis / 60000);
                 const seconds = ((track.trackTimeMillis % 60000) / 1000).toFixed(0);
 
-                setExtraInfo({
+                setExtraInfo(prev => ({
+                    ...prev,
                     year: track.releaseDate ? new Date(track.releaseDate).getFullYear() : '----',
                     genre: track.primaryGenreName || 'Music',
                     duration: `${minutes}:${seconds.padStart(2, '0')}`,
-                    album: track.collectionName || 'their latest project'
-                });
+                    album: track.collectionName || 'their latest project',
+                    appleMusicUrl: track.trackViewUrl
+                }));
             }
         };
         fetchExtra();
@@ -64,7 +73,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
     return (
         <div className="animate-in fade-in slide-in-from-right-12 duration-500 min-h-screen bg-[#14181c] relative z-50 pb-20 overflow-x-hidden">
             {/* Cinematic Backdrop */}
-            <div className="relative w-full h-[60vh] overflow-hidden">
+            <div className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden">
                 <div className="absolute inset-0 z-0">
                     <img src={post.album_art_url} className="w-full h-full object-cover blur-md opacity-40 scale-105" />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#14181c]/80 to-[#14181c]"></div>
@@ -73,23 +82,27 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 <div className="relative z-10 max-w-4xl mx-auto h-full px-6 flex flex-col justify-end pb-12">
                     <button onClick={() => { if (audioRef.current) audioRef.current.pause(); onBack(); }} className="absolute top-6 left-6 z-20 p-2 bg-black/40 hover:bg-white/10 backdrop-blur-md rounded-full text-white transition border border-white/10"><ChevronDown className="rotate-90" size={24} /></button>
 
-                    <div className="flex flex-col md:flex-row gap-8 items-end">
-                        <div className="flex-1">
+                    <div className="flex flex-col md:flex-row gap-8 items-center md:items-end">
+                        {/* Poster Card - Always visible now */}
+                        <div className="w-48 aspect-[2/3] md:w-48 bg-[#202020] rounded-lg shadow-2xl overflow-hidden border border-white/10 shrink-0 transform md:rotate-2 hover:rotate-0 transition duration-500 group relative order-2 md:order-1">
+                            <img src={post.album_art_url} className="w-full h-full object-cover" />
+                            <div onClick={togglePlay} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
+                                {isPlaying ? <Headphones className="text-lime-400 animate-pulse" size={48} /> : <PlayCircle className="text-white" size={48} />}
+                            </div>
+                            {/* Mobile Play Indicator */}
+                            <div className="absolute inset-0 flex items-center justify-center md:hidden pointer-events-none">
+                                {isPlaying ? <Headphones className="text-lime-400 animate-pulse" size={40} /> : <PlayCircle className="text-white/60" size={40} />}
+                            </div>
+                        </div>
+
+                        <div className="flex-1 text-center md:text-left order-1 md:order-2">
                             <h1 className="text-4xl md:text-6xl font-black text-white leading-tight tracking-tighter mb-4">{post.song_name}</h1>
-                            <div className="flex items-center gap-4 text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] md:text-sm">
+                            <div className="flex items-center justify-center md:justify-start gap-4 text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] md:text-sm">
                                 <span>{extraInfo.year}</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-600"></span>
                                 <span className="text-white">{post.artist_name}</span>
                                 <span className="w-1 h-1 rounded-full bg-gray-600"></span>
                                 <span>{extraInfo.duration}</span>
-                            </div>
-                        </div>
-
-                        {/* Poster Card */}
-                        <div className="hidden md:block w-48 aspect-[2/3] bg-[#202020] rounded-lg shadow-2xl overflow-hidden border border-white/10 shrink-0 transform rotate-2 hover:rotate-0 transition duration-500 group relative">
-                            <img src={post.album_art_url} className="w-full h-full object-cover" />
-                            <div onClick={togglePlay} className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition cursor-pointer">
-                                {isPlaying ? <Headphones className="text-lime-400 animate-pulse" size={48} /> : <PlayCircle className="text-white" size={48} />}
                             </div>
                         </div>
                     </div>
@@ -210,6 +223,22 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         <Plus size={18} />
                         Add to list
                     </button>
+
+                    <div className="bg-[#1a1f26] rounded-2xl p-6 border border-white/5">
+                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-6">Where to listen</h3>
+                        <div className="space-y-3">
+                            {extraInfo.appleMusicUrl && (
+                                <a href={extraInfo.appleMusicUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition group">
+                                    <span className="text-xs font-bold text-gray-300">Apple Music</span>
+                                    <Plus size={16} className="text-gray-500 group-hover:text-white" />
+                                </a>
+                            )}
+                            <a href={extraInfo.spotifyUrl} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-white/5 hover:bg-white/10 transition group">
+                                <span className="text-xs font-bold text-gray-300">Spotify</span>
+                                <Plus size={16} className="text-gray-500 group-hover:text-white" />
+                            </a>
+                        </div>
+                    </div>
 
                     <div className="bg-[#1a1f26] rounded-2xl p-6 border border-white/5">
                         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-4">Song Stats</h3>
