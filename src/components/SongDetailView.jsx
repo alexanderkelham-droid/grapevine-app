@@ -153,7 +153,39 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         sparking conversation across the Grapevine community with {songReviews.length} curated reviews.
                     </div>
 
+                    {/* Ratings Section */}
+                    <section className="border-t border-white/5 pt-8">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Ratings</h2>
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-black text-white">{averageRating}</span>
+                                <div className="flex gap-0.5">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={14} className={i < Math.round(averageRating) ? 'text-lime-400 fill-lime-400' : 'text-gray-800'} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
 
+                        {/* Histogram */}
+                        <div className="flex items-end gap-1 h-24 mb-2">
+                            {distribution.map((count, i) => (
+                                <div
+                                    key={i}
+                                    className="flex-1 bg-[#2c3440] hover:bg-lime-400 transition-colors rounded-t-sm relative group cursor-help"
+                                    style={{ height: `${(count / maxDist) * 100}%` }}
+                                >
+                                    <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-white text-charcoal text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition whitespace-nowrap font-bold">
+                                        {count} reviews
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="flex justify-between text-[10px] font-black text-gray-600 tracking-widest px-1">
+                            <span>1 STAR</span>
+                            <span>5 STARS</span>
+                        </div>
+                    </section>
 
                     {/* Concise Music Links */}
                     <div className="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
