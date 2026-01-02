@@ -57,12 +57,15 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                     .ilike('user_name', `%${query}%`);
 
                 if (profData) {
-                    people = profData.map(p => ({
-                        id: p.id,
-                        user_name: p.user_name,
-                        avatar_url: p.avatar_url,
-                        type: 'PERSON'
-                    }));
+                    const BLOCKED_NAMES = ['jade', 'music', 'miles', 'beats', 'curator'];
+                    people = profData
+                        .filter(p => !BLOCKED_NAMES.some(name => p.user_name?.toLowerCase().includes(name)))
+                        .map(p => ({
+                            id: p.id,
+                            user_name: p.user_name,
+                            avatar_url: p.avatar_url,
+                            type: 'PERSON'
+                        }));
                 }
             }
         } catch (e) {

@@ -81,7 +81,10 @@ function App() {
     const fetchPosts = async () => {
         if (!supabase) { setPosts(SAMPLE_POSTS); return; }
         const { data } = await supabase.from('posts').select('*').order('created_at', { ascending: false });
-        if (data) setPosts(data);
+        if (data) {
+            const BLOCKED_NAMES = ['jade', 'music', 'miles', 'beats', 'curator'];
+            setPosts(data.filter(p => !BLOCKED_NAMES.some(name => p.user_name?.toLowerCase().includes(name))));
+        }
     };
 
     const fetchFollowing = async () => {
