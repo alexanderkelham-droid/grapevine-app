@@ -22,11 +22,13 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
 
     const performSearch = async () => {
         setSearching(true);
+        let songs = [];
+        let people = [];
         try {
             // 1. Search Songs (iTunes)
             const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=15&country=us`);
             const songData = await songRes.json();
-            const songs = (songData.results || []).map(t => ({
+            songs = (songData.results || []).map(t => ({
                 id: t.trackId,
                 song_name: t.trackName,
                 artist_name: t.artistName,
@@ -35,17 +37,14 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                 type: 'SONG'
             }));
 
-            // 2. Search People (from posts/comments uniquely)
-            // In a real app, you'd have a profiles table. For now, we'll query unique usernames from posts.
-            let people = [];
+            // 2. Search People 
             if (supabase) {
-                const { data } = await supabase
+                const { data, error: supError } = await supabase
                     .from('posts')
                     .select('user_id, user_name')
                     .ilike('user_name', `%${query}%`);
 
                 if (data) {
-                    // Unique people
                     const uniquePeople = {};
                     data.forEach(p => {
                         if (!uniquePeople[p.user_id]) {
@@ -59,11 +58,10 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                     people = Object.values(uniquePeople);
                 }
             }
-
-            setResults({ songs, people });
         } catch (e) {
             console.error("Search error:", e);
         } finally {
+            setResults({ songs, people });
             setSearching(false);
         }
     };
