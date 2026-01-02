@@ -8,7 +8,7 @@ const Toast = ({ message, onClose }) => {
 
     return (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[10002] bg-lime-400 text-charcoal px-8 py-4 rounded-2xl font-black shadow-[0_8px_32px_rgba(163,230,53,0.3)] animate-in slide-in-from-top-12 fade-in duration-500 flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-charcoal animate-pulse"></div>
+
             {message}
         </div>
     );

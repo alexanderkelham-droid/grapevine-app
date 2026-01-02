@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, Plus, Music, Headphones, X, User as UserIcon } from 'lucide-react';
+import { LogOut, Plus, Music, Headphones, X, User as UserIcon, Camera, Edit2, Check, Loader2 } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import PosterCard from './PosterCard';
 
@@ -13,6 +13,10 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
     const [followModalType, setFollowModalType] = useState('followers'); // 'followers' or 'following'
     const [followList, setFollowList] = useState([]);
     const [loadingFollowList, setLoadingFollowList] = useState(false);
+    const [profile, setProfile] = useState({ user_name: user.user_metadata?.full_name || user.user_name, avatar_url: null });
+    const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState('');
+    const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
         fetchProfileData();
@@ -46,6 +50,15 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
             const { count: followers } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id);
             const { count: following } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id);
             setFollowStats({ followers: followers || 0, following: following || 0 });
+
+            // Fetch Profiles table data
+            const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+            if (prof) {
+                setProfile({ user_name: prof.user_name, avatar_url: prof.avatar_url });
+                setEditName(prof.user_name);
+            } else {
+                setEditName(user.user_metadata?.full_name || user.user_name);
+            }
 
             // Check if current user follows this profile
             if (!isOwnProfile && currentUser) {
@@ -130,17 +143,103 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
         }
     };
 
+    const handleSaveProfile = async () => {
+        try {
+            const updates = {
+                id: user.id,
+                user_name: editName,
+                updated_at: new Date()
+            };
+            const { error } = await supabase.from('profiles').upsert(updates);
+            if (error) throw error;
+            setProfile(prev => ({ ...prev, user_name: editName }));
+            setIsEditing(false);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const handleAvatarUpload = async (e) => {
+        try {
+            setUploading(true);
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+            const filePath = `${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+            await supabase.from('profiles').upsert({
+                id: user.id,
+                avatar_url: publicUrl,
+                updated_at: new Date()
+            });
+            setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
+        } catch (e) {
+            console.error(e);
+            alert("To upload images, please make sure you have a public bucket named 'avatars' in your Supabase storage.");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
         <div className="animate-in fade-in duration-500">
             {/* Profile Header */}
             <div className="flex items-center gap-6 mb-10">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-4xl font-black text-charcoal shadow-xl shrink-0">
-                    {(user.user_metadata?.full_name || user.user_name || 'U')[0].toUpperCase()}
+                <div className="relative group/avatar">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-4xl font-black text-charcoal shadow-xl shrink-0 overflow-hidden">
+                        {profile.avatar_url ? (
+                            <img src={profile.avatar_url} className="w-full h-full object-cover" />
+                        ) : (
+                            (profile.user_name || 'U')[0].toUpperCase()
+                        )}
+                        {uploading && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                <Loader2 className="animate-spin text-lime-400" size={24} />
+                            </div>
+                        )}
+                    </div>
+                    {isOwnProfile && (
+                        <label className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover/avatar:opacity-100 transition cursor-pointer rounded-full">
+                            <Camera className="text-white" size={24} />
+                            <input type="file" className="hidden" accept="image/*" onChange={handleAvatarUpload} disabled={uploading} />
+                        </label>
+                    )}
                 </div>
+
                 <div className="flex-1 min-w-0">
-                    <h1 className="text-3xl font-black tracking-tight truncate mb-1">
-                        {user.user_metadata?.full_name || user.user_name}
-                    </h1>
+                    {isEditing ? (
+                        <div className="flex items-center gap-2 mb-2">
+                            <input
+                                type="text"
+                                value={editName}
+                                onChange={e => setEditName(e.target.value)}
+                                className="bg-white/5 border border-lime-400/50 rounded-lg px-3 py-1 text-2xl font-black text-white focus:outline-none w-full maxWidth-[300px]"
+                                autoFocus
+                            />
+                            <button onClick={handleSaveProfile} className="p-2 bg-lime-400 text-charcoal rounded-lg"><Check size={20} /></button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-3">
+                            <h1 className="text-3xl font-black tracking-tight truncate mb-1">
+                                {profile.user_name}
+                            </h1>
+                            {isOwnProfile && (
+                                <button onClick={() => setIsEditing(true)} className="text-gray-500 hover:text-white transition">
+                                    <Edit2 size={16} />
+                                </button>
+                            )}
+                        </div>
+                    )}
 
                     <div className="flex items-center gap-6 mb-4">
                         <div className="flex flex-col cursor-pointer hover:opacity-70 transition" onClick={() => openFollowModal('following')}>
@@ -153,21 +252,23 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
                         </div>
                     </div>
 
-                    {isOwnProfile ? (
-                        <button
-                            onClick={onLogout}
-                            className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
-                        >
-                            <LogOut size={12} /> Sign Out
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => handleFollow(user.id, isFollowing)}
-                            className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition shadow-lg ${isFollowing ? 'bg-white/10 text-white border border-white/10 hover:bg-red-400/20 hover:text-red-400 hover:border-red-400/50' : 'bg-lime-400 text-charcoal hover:bg-lime-500 shadow-lime-400/20'}`}
-                        >
-                            {isFollowing ? 'Following' : 'Follow curator'}
-                        </button>
-                    )}
+                    <div className="flex items-center gap-3">
+                        {isOwnProfile ? (
+                            <button
+                                onClick={onLogout}
+                                className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-white hover:bg-white/10 transition flex items-center gap-2"
+                            >
+                                <LogOut size={12} /> Sign Out
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => handleFollow(user.id, isFollowing)}
+                                className={`px-6 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition shadow-lg ${isFollowing ? 'bg-white/10 text-white border border-white/10 hover:bg-red-400/20 hover:text-red-400 hover:border-red-400/50' : 'bg-lime-400 text-charcoal hover:bg-lime-500 shadow-lime-400/20'}`}
+                            >
+                                {isFollowing ? 'Following' : 'Follow curator'}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
 

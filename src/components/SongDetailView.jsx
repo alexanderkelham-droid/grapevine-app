@@ -217,7 +217,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         ) : (
                             <div className="text-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10">
                                 <p className="text-gray-500 italic">No one has reviewed this yet.</p>
-                                <button onClick={() => onRate(post)} className="mt-4 text-lime-400 font-bold hover:underline">Log your review</button>
+                                <button onClick={() => { const { id, ...cleanPost } = post; onRate(cleanPost); }} className="mt-4 text-lime-400 font-bold hover:underline">Log your review</button>
                             </div>
                         )}
                     </section>
@@ -226,7 +226,15 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 {/* Right Column: Sidebar Actions */}
                 <div className="space-y-6">
                     <button
-                        onClick={() => onRate(userReview || post)}
+                        onClick={() => {
+                            if (hasLogged) {
+                                onRate(userReview);
+                            } else {
+                                // Strip the ID so it's treated as a new post by this user
+                                const { id, ...cleanPost } = post;
+                                onRate(cleanPost);
+                            }
+                        }}
                         className="w-full bg-lime-400 hover:bg-lime-500 text-charcoal font-black py-4 rounded-xl flex items-center justify-center gap-2 transition shadow-xl shadow-lime-400/10 uppercase tracking-widest text-xs"
                     >
                         <Plus size={18} strokeWidth={3} />

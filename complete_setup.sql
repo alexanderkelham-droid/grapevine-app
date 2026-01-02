@@ -88,3 +88,15 @@ alter publication supabase_realtime add table follows;
 
 -- 10. ADD UNIQUENESS CONSTRAINT TO POSTS
 alter table posts add unique (user_id, song_name, artist_name);
+
+-- 11. PROFILES TABLE
+create table if not exists profiles (
+  id uuid references auth.users primary key,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  user_name text,
+  avatar_url text
+);
+
+alter publication supabase_realtime add table profiles;
+alter table profiles enable row level security;
+create policy "Public Access Profiles" on profiles for all using (true) with check (true);
