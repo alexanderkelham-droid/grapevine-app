@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Loader2, LogOut, Search, Home, Library, User } from 'lucide-react';
+import { Plus, Loader2, LogOut, Search, Home, Library, User, Music } from 'lucide-react';
 import { supabase } from './supabaseClient';
 
 // Import refactored components
