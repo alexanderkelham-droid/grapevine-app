@@ -29,14 +29,18 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
         if (e.target.value.length < 2) return;
         setSearching(true);
         try {
-            const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10&country=us`);
+            const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10`, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            if (!res.ok) throw new Error('iTunes API failed');
             const data = await res.json();
             if (data.results) {
                 setResults(data.results.map(t => ({
                     id: t.trackId,
                     title: t.trackName,
                     artist: t.artistName,
-                    albumCover: t.artworkUrl100.replace('100x100', '600x600'),
+                    albumCover: (t.artworkUrl100 || '').replace('100x100', '600x600'),
                     previewUrl: t.previewUrl,
                     url: t.trackViewUrl
                 })));

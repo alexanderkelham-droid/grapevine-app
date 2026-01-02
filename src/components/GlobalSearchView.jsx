@@ -26,13 +26,17 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
         let people = [];
         try {
             // 1. Search Songs (iTunes)
-            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=15&country=us`);
+            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=15`, {
+                mode: 'cors',
+                credentials: 'omit'
+            });
+            if (!songRes.ok) throw new Error('iTunes API failed');
             const songData = await songRes.json();
             songs = (songData.results || []).map(t => ({
                 id: t.trackId,
                 song_name: t.trackName,
                 artist_name: t.artistName,
-                album_art_url: t.artworkUrl100.replace('100x100', '600x600'),
+                album_art_url: (t.artworkUrl100 || '').replace('100x100', '600x600'),
                 preview_url: t.previewUrl,
                 type: 'SONG'
             }));
