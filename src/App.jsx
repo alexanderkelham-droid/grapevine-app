@@ -361,9 +361,13 @@ function App() {
                                 <button className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-600 hover:text-white transition">More</button>
                             </div>
                             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                                {[...posts].reverse().slice(0, 6).map(post => (
-                                    <PosterCard key={post.id} post={post} onClick={setActiveSong} showUser={false} />
-                                ))}
+                                {[...posts]
+                                    .filter(p => !p.id.startsWith('sample-'))
+                                    .reverse()
+                                    .slice(0, 6)
+                                    .map(post => (
+                                        <PosterCard key={post.id} post={post} onClick={setActiveSong} showUser={false} />
+                                    ))}
                             </div>
                         </section>
 
