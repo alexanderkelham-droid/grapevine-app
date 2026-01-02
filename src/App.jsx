@@ -236,7 +236,15 @@ function App() {
     if (activeSong) {
         return (
             <>
-                <SongDetailView post={activeSong} onBack={() => setActiveSong(null)} allPosts={posts} currentUser={session.user} onRate={handleRateFromSong} onAddToPlaylist={handleOpenPlaylistModal} />
+                <SongDetailView
+                    post={activeSong}
+                    onBack={() => setActiveSong(null)}
+                    allPosts={posts}
+                    currentUser={session.user}
+                    onRate={handleRateFromSong}
+                    onAddToPlaylist={handleOpenPlaylistModal}
+                    onSelectProfile={handleSelectPerson}
+                />
                 {modals}
             </>
         );

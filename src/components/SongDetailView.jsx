@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, PlayCircle, Star, Plus, Headphones, Music } from 'lucide-react';
 import CommentSection from './CommentSection';
 
-const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPlaylist }) => {
+const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPlaylist, onSelectProfile }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
     const [previewUrl, setPreviewUrl] = useState(post.preview_url);
@@ -223,13 +223,16 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                             <div className="space-y-6">
                                 {songReviews.map(r => (
                                     <div key={r.id} className="border-b border-white/5 pb-8">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-charcoal font-black">
+                                        <div
+                                            className="flex items-center gap-3 mb-4 cursor-pointer group/user"
+                                            onClick={() => onSelectProfile({ id: r.user_id, user_name: r.user_name })}
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-lime-400 to-emerald-600 flex items-center justify-center text-charcoal font-black group-hover/user:ring-2 group-hover/user:ring-lime-400 transition">
                                                 {r.user_name?.[0].toUpperCase()}
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-white uppercase text-xs tracking-widest">{r.user_name}</span>
+                                                    <span className="font-bold text-white uppercase text-xs tracking-widest group-hover/user:text-lime-400 transition">{r.user_name}</span>
                                                     <div className="flex gap-0.5">
                                                         {[...Array(5)].map((_, i) => {
                                                             const starValue = i + 1;

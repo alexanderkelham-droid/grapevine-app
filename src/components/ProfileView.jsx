@@ -15,12 +15,20 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
     const [followModalType, setFollowModalType] = useState('followers'); // 'followers' or 'following'
     const [followList, setFollowList] = useState([]);
     const [loadingFollowList, setLoadingFollowList] = useState(false);
-    const [profile, setProfile] = useState({ user_name: user.user_metadata?.full_name || user.user_name, avatar_url: null });
+    const [profile, setProfile] = useState({ user_name: '', avatar_url: null });
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState('');
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
+        // Reset state when user changes to prevent data leakage
+        setProfile({ user_name: user.user_metadata?.full_name || user.user_name || 'Curator', avatar_url: null });
+        setEditName(user.user_metadata?.full_name || user.user_name || 'Curator');
+        setUserPosts([]);
+        setUserPlaylists([]);
+        setTop4([null, null, null, null]);
+        setFollowStats({ followers: 0, following: 0 });
+
         fetchProfileData();
     }, [user.id]);
 
@@ -81,7 +89,9 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
                 setProfile({ user_name: prof.user_name, avatar_url: prof.avatar_url });
                 setEditName(prof.user_name);
             } else {
-                setEditName(user.user_metadata?.full_name || user.user_name);
+                const fallbackName = user.user_metadata?.full_name || user.user_name || 'Curator';
+                setProfile({ user_name: fallbackName, avatar_url: null });
+                setEditName(fallbackName);
             }
 
             // Check if current user follows this profile
