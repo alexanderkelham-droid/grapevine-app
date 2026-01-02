@@ -380,6 +380,13 @@ function App() {
                         </section>
                     </div>
                 )}
+                {view === 'SEARCH' && (
+                    <GlobalSearchView
+                        onBack={handleGoHome}
+                        onSelectSong={(s) => setActiveSong(s)}
+                        onSelectProfile={handleSelectPerson}
+                    />
+                )}
                 {view === 'PLAYLISTS' && (
                     <PlaylistsView
                         playlists={playlists}

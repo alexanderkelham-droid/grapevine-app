@@ -24,9 +24,9 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
         setSearching(true);
         try {
             // 1. Search Songs (iTunes)
-            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=10`);
+            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=15&country=us`);
             const songData = await songRes.json();
-            const songs = songData.results.map(t => ({
+            const songs = (songData.results || []).map(t => ({
                 id: t.trackId,
                 song_name: t.trackName,
                 artist_name: t.artistName,
