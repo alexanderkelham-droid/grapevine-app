@@ -20,17 +20,25 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
         return () => clearTimeout(delayDebounceFn);
     }, [query]);
 
+    const [error, setError] = useState(null);
+
     const performSearch = async () => {
         setSearching(true);
+        setError(null);
         let songs = [];
         let people = [];
         try {
             // 1. Search Songs (iTunes)
-            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=15`, {
-                mode: 'cors',
-                credentials: 'omit'
+            const songRes = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=25`, {
+                headers: {
+                    'Accept': 'application/json',
+                }
             });
-            if (!songRes.ok) throw new Error('iTunes API failed');
+
+            if (!songRes.ok) {
+                throw new Error(`Cloud API Error: ${songRes.status}`);
+            }
+
             const songData = await songRes.json();
             songs = (songData.results || []).map(t => ({
                 id: t.trackId,
@@ -43,7 +51,7 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
 
             // 2. Search People 
             if (supabase) {
-                const { data, error: supError } = await supabase
+                const { data } = await supabase
                     .from('posts')
                     .select('user_id, user_name')
                     .ilike('user_name', `%${query}%`);
@@ -64,6 +72,7 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
             }
         } catch (e) {
             console.error("Search error:", e);
+            setError(e.message);
         } finally {
             setResults({ songs, people });
             setSearching(false);
@@ -164,7 +173,14 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                             </section>
                         )}
 
-                        {query.length >= 2 && results.songs.length === 0 && results.people.length === 0 && (
+                        {error && (
+                            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-center">
+                                <p className="text-red-400 text-sm font-bold">Search issue: {error}</p>
+                                <button onClick={performSearch} className="mt-2 text-xs font-black uppercase text-white hover:underline">Tap to retry</button>
+                            </div>
+                        )}
+
+                        {query.length >= 2 && results.songs.length === 0 && results.people.length === 0 && !error && (
                             <div className="text-center py-20">
                                 <Search size={48} className="text-gray-800 mx-auto mb-4" />
                                 <h3 className="text-gray-500 font-medium">No results found for "{query}"</h3>
@@ -172,13 +188,9 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                             </div>
                         )}
 
-                        {query.length < 2 && (
-                            <div className="text-center py-20">
-                                <Search size={48} className="text-gray-800 mx-auto mb-4" />
-                                <h3 className="text-gray-500 font-medium">Search grapevine</h3>
-                                <p className="text-gray-600 text-sm mt-1">Find your favorite songs or fellow curators.</p>
-                            </div>
-                        )}
+                        <div className="pt-20 pb-10 text-center opacity-20">
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-[0.5em]">Grapevine v1.4.1 (Ready)</p>
+                        </div>
                     </>
                 )}
             </div>

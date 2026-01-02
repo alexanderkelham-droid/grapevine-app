@@ -30,10 +30,9 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
         setSearching(true);
         try {
             const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10`, {
-                mode: 'cors',
-                credentials: 'omit'
+                headers: { 'Accept': 'application/json' }
             });
-            if (!res.ok) throw new Error('iTunes API failed');
+            if (!res.ok) throw new Error(`iTunes API failed: ${res.status}`);
             const data = await res.json();
             if (data.results) {
                 setResults(data.results.map(t => ({
