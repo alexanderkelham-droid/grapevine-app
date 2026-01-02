@@ -419,6 +419,7 @@ function App() {
                         }}
                         onSelectSong={(s) => setActiveSong(s)}
                         onSelectProfile={handleSelectPerson}
+                        onSelectPlaylist={(p) => setActivePlaylist(p)}
                     />
                 )}
             </main>

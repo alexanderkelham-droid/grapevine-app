@@ -3,9 +3,11 @@ import { LogOut, Plus, Music, Headphones, X, User as UserIcon, Camera, Edit2, Ch
 import { supabase } from '../supabaseClient';
 import PosterCard from './PosterCard';
 
-const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, onSelectSong, onSelectProfile, playlists, playlistItems, posts }) => {
+const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, onSelectSong, onSelectProfile, onSelectPlaylist }) => {
     const [top4, setTop4] = useState([null, null, null, null]);
     const [userPosts, setUserPosts] = useState([]);
+    const [userPlaylists, setUserPlaylists] = useState([]);
+    const [userPlaylistItems, setUserPlaylistItems] = useState({});
     const [loading, setLoading] = useState(true);
     const [followStats, setFollowStats] = useState({ followers: 0, following: 0 });
     const [isFollowing, setIsFollowing] = useState(false);
@@ -50,6 +52,28 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
             const { count: followers } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id);
             const { count: following } = await supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id);
             setFollowStats({ followers: followers || 0, following: following || 0 });
+
+            // Fetch User's Playlists
+            const { data: playlists } = await supabase
+                .from('playlists')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (playlists) {
+                setUserPlaylists(playlists);
+                // Fetch items for each playlist to show covers
+                const itemsMap = {};
+                for (const pl of playlists) {
+                    const { data: items } = await supabase
+                        .from('playlist_items')
+                        .select('*')
+                        .eq('playlist_id', pl.id)
+                        .order('position', { ascending: true });
+                    itemsMap[pl.id] = items || [];
+                }
+                setUserPlaylistItems(itemsMap);
+            }
 
             // Fetch Profiles table data
             const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
@@ -298,6 +322,37 @@ const ProfileView = ({ user, currentUser, isOwnProfile, onLogout, onEditTop4, on
                     ))}
                 </div>
             </section>
+
+            {/* User Playlists Section */}
+            {userPlaylists.length > 0 && (
+                <section className="mb-12">
+                    <h2 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 mb-6 ml-1">Collections</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        {userPlaylists.map(playlist => {
+                            const items = userPlaylistItems[playlist.id] || [];
+                            const covers = items.slice(0, 4).map(item => item.album_art_url).filter(Boolean);
+                            return (
+                                <div
+                                    key={playlist.id}
+                                    onClick={() => onSelectPlaylist(playlist)}
+                                    className="group relative aspect-video bg-white/5 rounded-2xl flex flex-col justify-end p-5 border border-white/5 hover:border-lime-400/50 transition cursor-pointer overflow-hidden shadow-xl"
+                                >
+                                    {covers[0] && (
+                                        <img src={covers[0]} className="absolute inset-0 w-full h-full object-cover blur-md opacity-30 group-hover:scale-110 transition duration-700" alt="" />
+                                    )}
+                                    <div className="relative z-10">
+                                        <h3 className="font-black text-white group-hover:text-lime-400 transition tracking-tight">{playlist.title}</h3>
+                                        <p className="text-[10px] text-gray-500 uppercase tracking-widest font-black mt-1">{items.length} songs</p>
+                                    </div>
+                                    <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-md p-2 rounded-full opacity-0 group-hover:opacity-100 transition">
+                                        <Music size={14} className="text-lime-400" />
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </section>
+            )}
 
             {/* User Posts Section */}
             <section>
