@@ -256,9 +256,20 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                     <div className="mt-8 pt-8 border-t border-white/5 flex flex-col gap-4">
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500">Listen on Services</span>
                         <div className="flex gap-3">
-                            {/* If SoundCloud post, show SoundCloud as the primary vibrant button */}
+                            {/* If SoundCloud post, show SoundCloud instead of Spotify */}
                             {post.soundcloud_url ? (
                                 <>
+                                    {extraInfo.appleMusicUrl && (
+                                        <a
+                                            href={`${extraInfo.appleMusicUrl}&app=music`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
+                                        >
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg" alt="Apple Music" className="w-5 h-5 invert" />
+                                            <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-lime-400">Apple Music</span>
+                                        </a>
+                                    )}
                                     <a
                                         href={post.soundcloud_url}
                                         target="_blank"
@@ -267,28 +278,6 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                                     >
                                         <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Antu_soundcloud.svg" alt="SoundCloud" className="w-5 h-5 shadow-lg" />
                                         <span className="text-xs font-black uppercase tracking-widest text-[#ff5500]">SoundCloud</span>
-                                    </a>
-                                    {extraInfo.appleMusicUrl && (
-                                        <a
-                                            href={`${extraInfo.appleMusicUrl}&app=music`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95 text-gray-400 hover:text-white"
-                                        >
-                                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Apple_Music_logo.svg" alt="Apple Music" className="w-5 h-5 invert opacity-50 group-hover:opacity-100" />
-                                            <span className="text-xs font-black uppercase tracking-widest">Apple Music</span>
-                                        </a>
-                                    )}
-                                    <a
-                                        href={window.innerWidth < 768 ? `spotify:search:${encodeURIComponent(post.artist_name + ' ' + post.song_name)}` : extraInfo.spotifyUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95 text-gray-400 hover:text-white"
-                                    >
-                                        <svg viewBox="0 0 24 24" className="w-5 h-5 fill-gray-500 group-hover:fill-[#1DB954]" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.49 17.3c-.21.346-.66.452-1.006.242-2.73-1.668-6.17-2.047-10.218-1.122-.396.09-.796-.165-.887-.56-.09-.396.165-.797.56-.888 4.437-1.015 8.237-.585 11.29 1.282.35.213.457.66.247 1.006zm1.465-3.264c-.266.432-.825.572-1.257.306-3.13-1.92-7.9-2.476-11.603-1.353-.487.147-1.005-.13-1.152-.616-.148-.487.13-1.005.617-1.152 4.25-1.29 9.516-.673 13.088 1.52.433.266.574.825.308 1.257zm.126-3.41c-3.754-2.23-9.962-2.435-13.56-.75-.576.176-1.19-.153-1.366-.73-.176-.577.152-1.192.73-1.368 4.14-1.258 11.01-1.015 15.337 1.55.518.307.688.976.38 1.493-.306.52-.975.69-1.49.382z" />
-                                        </svg>
-                                        <span className="text-xs font-black uppercase tracking-widest">Spotify</span>
                                     </a>
                                 </>
                             ) : (
