@@ -1,4 +1,14 @@
 export default async function handler(req, res) {
+    // Add CORS headers to allow requests from localhost during development
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     const { q } = req.query;
     if (!q) return res.status(400).json({ error: 'Query required' });
 
@@ -28,8 +38,7 @@ export default async function handler(req, res) {
         const response = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(q)}&media=music&entity=song&limit=20`);
         const data = await response.json();
 
-        // Add CORS headers just in case
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        // CORS headers already set at the top
         res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
 
         return res.status(200).json(data);
