@@ -189,18 +189,25 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                     )}
 
                     {/* SoundCloud Player */}
-                    {post.soundcloud_url && (
-                        <div className="rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black">
-                            <iframe
-                                width="100%"
-                                height="166"
-                                scrolling="no"
-                                frameBorder="no"
-                                allow="autoplay"
-                                src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(post.soundcloud_url.split('?')[0])}&color=%23bef264&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false`}
-                            ></iframe>
-                        </div>
-                    )}
+                    {post.soundcloud_url && (() => {
+                        // Clean the URL: remove query parameters and ensure it's valid
+                        let cleanUrl = post.soundcloud_url.split('?')[0].split('#')[0].trim();
+                        console.log('Original SoundCloud URL:', post.soundcloud_url);
+                        console.log('Cleaned SoundCloud URL:', cleanUrl);
+                        
+                        return (
+                            <div className="rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black">
+                                <iframe
+                                    width="100%"
+                                    height="166"
+                                    scrolling="no"
+                                    frameBorder="no"
+                                    allow="autoplay"
+                                    src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(cleanUrl)}&color=%23bef264&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false`}
+                                ></iframe>
+                            </div>
+                        );
+                    })()}
 
                     {/* Wiki/Vibe Description */}
                     <div className="text-gray-400 leading-relaxed italic text-lg">
