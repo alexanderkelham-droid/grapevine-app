@@ -29,9 +29,21 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
         let people = [];
         try {
             const isLocal = window.location.hostname === 'localhost';
-            const url = isLocal
-                ? `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=25`
-                : `/api/search?q=${encodeURIComponent(query)}`;
+            const isSoundCloudLink = query.includes('soundcloud.com/') || query.includes('on.soundcloud.com/');
+            
+            // Choose API endpoint
+            let url;
+            if (isSoundCloudLink) {
+                // Always use production API for SoundCloud (even locally)
+                url = isLocal 
+                    ? `https://grapevine-app-sand.vercel.app/api/search?q=${encodeURIComponent(query)}`
+                    : `/api/search?q=${encodeURIComponent(query)}`;
+            } else {
+                // Regular iTunes search
+                url = isLocal
+                    ? `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&media=music&entity=song&limit=25`
+                    : `/api/search?q=${encodeURIComponent(query)}`;
+            }
 
             const songRes = await fetch(url);
 
@@ -44,8 +56,11 @@ const GlobalSearchView = ({ onBack, onSelectSong, onSelectProfile }) => {
                 id: t.trackId,
                 song_name: t.trackName,
                 artist_name: t.artistName,
-                album_art_url: (t.artworkUrl100 || '').replace('100x100', '600x600'),
+                album_art_url: t.soundcloud_data
+                    ? (t.artworkUrl100 || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop')
+                    : (t.artworkUrl100 || '').replace('100x100', '600x600'),
                 preview_url: t.previewUrl,
+                soundcloud_url: isSoundCloudLink ? query : null, // Store the original query if it's a SoundCloud link
                 type: 'SONG'
             }));
 
