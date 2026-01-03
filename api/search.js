@@ -16,7 +16,26 @@ export default async function handler(req, res) {
         // Handle SoundCloud URLs
         if (q.includes('soundcloud.com/') || q.includes('on.soundcloud.com/')) {
             console.log('Processing SoundCloud URL:', q);
-            const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(q)}&format=json`);
+            
+            // If it's a shortened URL, we need to expand it first
+            let fullUrl = q;
+            if (q.includes('on.soundcloud.com/')) {
+                console.log('Detected shortened URL, expanding...');
+                try {
+                    // Follow the redirect to get the full URL
+                    const redirectRes = await fetch(q, { redirect: 'manual' });
+                    const location = redirectRes.headers.get('location');
+                    if (location) {
+                        fullUrl = location;
+                        console.log('Expanded to:', fullUrl);
+                    }
+                } catch (e) {
+                    console.error('Failed to expand shortened URL:', e);
+                    // If expansion fails, try using the oEmbed API to resolve it
+                }
+            }
+            
+            const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(fullUrl)}&format=json`);
             if (scRes.ok) {
                 const scData = await scRes.json();
                 // Standardize the response format for the client
@@ -27,7 +46,7 @@ export default async function handler(req, res) {
                         trackName: scData.title,
                         artistName: scData.author_name || 'SoundCloud Artist',
                         artworkUrl100: scData.thumbnail_url || '',
-                        soundcloudUrl: q
+                        soundcloudUrl: fullUrl // Use the expanded URL
                     }]
                 };
                 console.log('Returning SoundCloud result:', JSON.stringify(result, null, 2));
