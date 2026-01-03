@@ -17,27 +17,22 @@ export default async function handler(req, res) {
         if (q.includes('soundcloud.com/') || q.includes('on.soundcloud.com/')) {
             console.log('Processing SoundCloud URL:', q);
             
-            // If it's a shortened URL, we need to expand it first
-            let fullUrl = q;
-            if (q.includes('on.soundcloud.com/')) {
-                console.log('Detected shortened URL, expanding...');
-                try {
-                    // Follow the redirect to get the full URL
-                    const redirectRes = await fetch(q, { redirect: 'manual' });
-                    const location = redirectRes.headers.get('location');
-                    if (location) {
-                        fullUrl = location;
-                        console.log('Expanded to:', fullUrl);
-                    }
-                } catch (e) {
-                    console.error('Failed to expand shortened URL:', e);
-                    // If expansion fails, try using the oEmbed API to resolve it
-                }
-            }
-            
-            const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(fullUrl)}&format=json`);
+            const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(q)}&format=json`);
             if (scRes.ok) {
                 const scData = await scRes.json();
+                
+                // Extract the full URL from the oEmbed response
+                // The oEmbed returns an iframe HTML with the full URL
+                let fullUrl = q;
+                if (scData.html && q.includes('on.soundcloud.com/')) {
+                    // Extract URL from iframe src like: src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/..."
+                    const match = scData.html.match(/url=([^&"]+)/);
+                    if (match) {
+                        fullUrl = decodeURIComponent(match[1]);
+                        console.log('Extracted full URL from oEmbed:', fullUrl);
+                    }
+                }
+                
                 // Standardize the response format for the client
                 const result = {
                     results: [{
@@ -46,7 +41,7 @@ export default async function handler(req, res) {
                         trackName: scData.title,
                         artistName: scData.author_name || 'SoundCloud Artist',
                         artworkUrl100: scData.thumbnail_url || '',
-                        soundcloudUrl: fullUrl // Use the expanded URL
+                        soundcloudUrl: fullUrl // Use the extracted full URL
                     }]
                 };
                 console.log('Returning SoundCloud result:', JSON.stringify(result, null, 2));
