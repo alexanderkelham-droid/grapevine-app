@@ -16,7 +16,8 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                     title: preSelectedSong.song_name || preSelectedSong.title,
                     artist: preSelectedSong.artist_name || preSelectedSong.artist,
                     albumCover: preSelectedSong.album_art_url || preSelectedSong.albumCover,
-                    previewUrl: preSelectedSong.preview_url || preSelectedSong.previewUrl
+                    previewUrl: preSelectedSong.preview_url || preSelectedSong.previewUrl,
+                    soundcloudUrl: preSelectedSong.soundcloud_url || preSelectedSong.soundcloudUrl
                 });
                 setRating(preSelectedSong.rating || 0);
                 setComment(preSelectedSong.caption || '');
