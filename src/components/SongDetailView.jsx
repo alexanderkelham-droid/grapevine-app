@@ -145,6 +145,20 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         </div>
                     )}
 
+                    {/* SoundCloud Player */}
+                    {post.soundcloud_url && (
+                        <div className="rounded-2xl overflow-hidden border border-white/5 shadow-2xl bg-black">
+                            <iframe
+                                width="100%"
+                                height="166"
+                                scrolling="no"
+                                frameborder="no"
+                                allow="autoplay"
+                                src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(post.soundcloud_url)}&color=%23bef264&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false`}
+                            ></iframe>
+                        </div>
+                    )}
+
                     {/* Dynamic Description */}
                     <div className="text-gray-400 leading-relaxed italic text-lg line-clamp-4">
                         '{post.song_name}' is a standout {extraInfo.genre.toLowerCase()} track by {post.artist_name},
@@ -213,6 +227,17 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                                 </svg>
                                 <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-[#1DB954]">Spotify</span>
                             </a>
+                            {post.soundcloud_url && (
+                                <a
+                                    href={post.soundcloud_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 bg-[#ff5500]/10 hover:bg-[#ff5500]/20 border border-[#ff5500]/20 rounded-xl p-4 flex items-center justify-center gap-3 transition group active:scale-95"
+                                >
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Antu_soundcloud.svg" alt="SoundCloud" className="w-5 h-5" />
+                                    <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-[#ff5500]">SoundCloud</span>
+                                </a>
+                            )}
                         </div>
                     </div>
                 </div>

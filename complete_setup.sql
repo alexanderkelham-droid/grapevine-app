@@ -11,6 +11,7 @@ create table if not exists posts (
   album_art_url text,
   preview_url text, -- Added preview URL support
   spotify_id text,
+  soundcloud_url text, -- Added SoundCloud URL support
   rating integer check (rating >= 1 and rating <= 5),
   caption text
 );

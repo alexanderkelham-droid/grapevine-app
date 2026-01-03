@@ -25,14 +25,40 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
     }, [isOpen, preSelectedSong]);
 
     const handleSearch = async (e) => {
-        setQuery(e.target.value);
-        if (e.target.value.length < 2) return;
+        const val = e.target.value;
+        setQuery(val);
+        if (val.length < 2) return;
+
+        // Check if it's a SoundCloud URL
+        if (val.includes('soundcloud.com/')) {
+            setSearching(true);
+            try {
+                // Use SoundCloud OEmbed
+                const res = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(val)}&format=json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setResults([{
+                        id: `sc-${Date.now()}`,
+                        title: data.title,
+                        artist: data.author_name || 'SoundCloud Artist',
+                        albumCover: data.thumbnail_url || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop',
+                        previewUrl: null, // SC OEmbed doesn't give preview, but it gives an iframe
+                        soundcloudUrl: val,
+                        isSoundCloud: true
+                    }]);
+                }
+            } catch (err) {
+                console.error("SoundCloud OEmbed Error:", err);
+            } finally { setSearching(false); }
+            return;
+        }
+
         setSearching(true);
         try {
             const isLocal = window.location.hostname === 'localhost';
             const url = isLocal
-                ? `https://itunes.apple.com/search?term=${encodeURIComponent(e.target.value)}&media=music&entity=song&limit=10`
-                : `/api/search?q=${encodeURIComponent(e.target.value)}`;
+                ? `https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&entity=song&limit=10`
+                : `/api/search?q=${encodeURIComponent(val)}`;
 
             const res = await fetch(url);
             if (!res.ok) throw new Error(`API failed: ${res.status}`);
@@ -62,6 +88,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                 artist_name: selected.artist,
                 album_art_url: selected.albumCover,
                 preview_url: selected.previewUrl,
+                soundcloud_url: selected.soundcloudUrl,
                 rating,
                 caption: comment
             });
