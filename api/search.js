@@ -5,11 +5,12 @@ export default async function handler(req, res) {
     try {
         // Handle SoundCloud URLs
         if (q.includes('soundcloud.com/') || q.includes('on.soundcloud.com/')) {
+            console.log('Processing SoundCloud URL:', q);
             const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(q)}&format=json`);
             if (scRes.ok) {
                 const scData = await scRes.json();
                 // Standardize the response format for the client
-                return res.status(200).json({
+                const result = {
                     results: [{
                         soundcloud_data: true,
                         trackId: `sc-${Date.now()}`,
@@ -18,7 +19,9 @@ export default async function handler(req, res) {
                         artworkUrl100: scData.thumbnail_url || '',
                         soundcloudUrl: q
                     }]
-                });
+                };
+                console.log('Returning SoundCloud result:', JSON.stringify(result, null, 2));
+                return res.status(200).json(result);
             }
         }
 
