@@ -20,21 +20,16 @@ export default async function handler(req, res) {
             const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(q)}&format=json`);
             if (scRes.ok) {
                 const scData = await scRes.json();
-                console.log('oEmbed response:', JSON.stringify(scData, null, 2));
                 
                 // Extract the full URL from the oEmbed response
                 // The oEmbed returns an iframe HTML with the full URL
                 let fullUrl = q;
                 if (scData.html && q.includes('on.soundcloud.com/')) {
-                    console.log('Attempting to extract URL from HTML:', scData.html);
                     // Extract URL from iframe src like: src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/..."
                     const match = scData.html.match(/url=([^&"]+)/);
-                    console.log('Regex match result:', match);
-                    if (match && match[1]) {
+                    if (match) {
                         fullUrl = decodeURIComponent(match[1]);
                         console.log('Extracted full URL from oEmbed:', fullUrl);
-                    } else {
-                        console.log('Failed to extract URL from HTML, using original');
                     }
                 }
                 
