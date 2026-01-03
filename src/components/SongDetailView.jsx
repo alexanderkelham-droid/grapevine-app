@@ -188,8 +188,8 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         </div>
                     )}
 
-                    {/* SoundCloud Player */}
-                    {post.soundcloud_url && (() => {
+                    {/* SoundCloud Player - Temporarily hidden */}
+                    {/* {post.soundcloud_url && (() => {
                         // Clean the URL: remove query parameters and ensure it's valid
                         let cleanUrl = post.soundcloud_url.split('?')[0].split('#')[0].trim();
                         console.log('Original SoundCloud URL:', post.soundcloud_url);
@@ -207,7 +207,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                                 ></iframe>
                             </div>
                         );
-                    })()}
+                    })()} */}
 
                     {/* Wiki/Vibe Description */}
                     <div className="text-gray-400 leading-relaxed italic text-lg">
