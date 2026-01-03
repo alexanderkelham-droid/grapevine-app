@@ -20,6 +20,7 @@ export default async function handler(req, res) {
             const scRes = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(q)}&format=json`);
             if (scRes.ok) {
                 const scData = await scRes.json();
+                console.log('Full oEmbed response:', JSON.stringify(scData, null, 2));
                 
                 // Extract the full URL from the oEmbed response
                 // The oEmbed returns an iframe HTML with the full URL
