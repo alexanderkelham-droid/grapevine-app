@@ -17,7 +17,7 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
     const [wikiSummary, setWikiSummary] = useState(null);
     const [vibeProfile, setVibeProfile] = useState(null);
 
-    const LASTFM_API_KEY = 'YOUR_LASTFM_KEY'; // User should replace this
+    const LASTFM_API_KEY = '3ed13ef3893d998b1d5a7bca7fbc863d'; // User should replace this
 
     const generateVibeProfile = (genre, year) => {
         const vibes = {
