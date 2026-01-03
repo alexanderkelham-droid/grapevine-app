@@ -86,6 +86,13 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
 
     const handleSelect = (s) => {
         console.log('Song selected:', s);
+        console.log('Current query:', query);
+        // If query is a SoundCloud URL, attach it to the selected song
+        const isSoundCloudQuery = query.includes('soundcloud.com/') || query.includes('on.soundcloud.com/');
+        if (isSoundCloudQuery) {
+            s.soundcloudUrl = query;
+            console.log('Attached SoundCloud URL from query to song:', query);
+        }
         setSelected(s);
     };
     const handleSubmit = () => {
