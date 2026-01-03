@@ -55,9 +55,20 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
             const isLocal = window.location.hostname === 'localhost';
 
             // If it's a SoundCloud link, we MUST use the API to avoid CORS
-            const url = (isLocal && !isSoundCloudLink)
-                ? `https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&entity=song&limit=10`
-                : `/api/search?q=${encodeURIComponent(val)}`;
+            let url;
+            if (isSoundCloudLink) {
+                // Always use production API for SoundCloud (even locally)
+                url = isLocal 
+                    ? `https://grapevine-app-sand.vercel.app/api/search?q=${encodeURIComponent(val)}`
+                    : `/api/search?q=${encodeURIComponent(val)}`;
+            } else {
+                // Regular iTunes search
+                url = isLocal
+                    ? `https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&entity=song&limit=10`
+                    : `/api/search?q=${encodeURIComponent(val)}`;
+            }
+            
+            console.log('Fetching from URL:', url);
 
             const res = await fetch(url);
             if (!res.ok) throw new Error(`API failed: ${res.status}`);
