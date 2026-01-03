@@ -29,52 +29,35 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
         setQuery(val);
         if (val.length < 2) return;
 
-        // Check if it's a SoundCloud URL
-        if (val.includes('soundcloud.com/')) {
-            setSearching(true);
-            try {
-                // Use SoundCloud OEmbed
-                const res = await fetch(`https://soundcloud.com/oembed?url=${encodeURIComponent(val)}&format=json`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setResults([{
-                        id: `sc-${Date.now()}`,
-                        title: data.title,
-                        artist: data.author_name || 'SoundCloud Artist',
-                        albumCover: data.thumbnail_url || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop',
-                        previewUrl: null, // SC OEmbed doesn't give preview, but it gives an iframe
-                        soundcloudUrl: val,
-                        isSoundCloud: true
-                    }]);
-                }
-            } catch (err) {
-                console.error("SoundCloud OEmbed Error:", err);
-            } finally { setSearching(false); }
-            return;
-        }
-
         setSearching(true);
         try {
             const isLocal = window.location.hostname === 'localhost';
-            const url = isLocal
+            const isSoundCloudLink = val.includes('soundcloud.com/') || val.includes('on.soundcloud.com/');
+
+            // If it's a SoundCloud link, we MUST use the API to avoid CORS
+            const url = (isLocal && !isSoundCloudLink)
                 ? `https://itunes.apple.com/search?term=${encodeURIComponent(val)}&media=music&entity=song&limit=10`
                 : `/api/search?q=${encodeURIComponent(val)}`;
 
             const res = await fetch(url);
             if (!res.ok) throw new Error(`API failed: ${res.status}`);
             const data = await res.json();
+
             if (data.results) {
                 setResults(data.results.map(t => ({
                     id: t.trackId,
                     title: t.trackName,
                     artist: t.artistName,
-                    albumCover: (t.artworkUrl100 || '').replace('100x100', '600x600'),
+                    albumCover: t.soundcloud_data
+                        ? (t.artworkUrl100 || 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=200&h=200&fit=crop')
+                        : (t.artworkUrl100 || '').replace('100x100', '600x600'),
                     previewUrl: t.previewUrl,
-                    url: t.trackViewUrl
+                    soundcloudUrl: t.soundcloudUrl,
+                    isSoundCloud: !!t.soundcloud_data
                 })));
             }
         } catch (err) {
-            console.error("iTunes Search Error:", err);
+            console.error("Search Error:", err);
         } finally { setSearching(false); }
     };
 
@@ -122,7 +105,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                                 <div className="flex-1 min-w-0">
                                     <h3 className="font-black text-xl text-white truncate">{selected.title}</h3>
                                     <p className="text-lime-400 font-bold">{selected.artist}</p>
-                                    <div className="mt-2 text-xs text-gray-500 flex items-center gap-1"><ExternalLink size={12} /><span>iTunes Store</span></div>
+                                    <div className="mt-2 text-xs text-gray-500 flex items-center gap-1"><ExternalLink size={12} /><span>{selected.isSoundCloud ? 'SoundCloud' : 'iTunes Store'}</span></div>
                                 </div>
                             </div>
                             {mode === 'REVIEW' && (
