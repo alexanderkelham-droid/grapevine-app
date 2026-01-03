@@ -195,9 +195,9 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                                 width="100%"
                                 height="166"
                                 scrolling="no"
-                                frameborder="no"
+                                frameBorder="no"
                                 allow="autoplay"
-                                src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(post.soundcloud_url)}&color=%23bef264&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false`}
+                                src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(post.soundcloud_url.split('?')[0])}&color=%23bef264&auto_play=false&hide_related=true&show_comments=true&show_user=true&show_reposts=false&show_teaser=false`}
                             ></iframe>
                         </div>
                     )}
