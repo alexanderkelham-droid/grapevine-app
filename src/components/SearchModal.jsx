@@ -45,7 +45,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
             const data = await res.json();
 
             if (data.results) {
-                setResults(data.results.map(t => ({
+                const mappedResults = data.results.map(t => ({
                     id: t.trackId,
                     title: t.trackName,
                     artist: t.artistName,
@@ -55,14 +55,20 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                     previewUrl: t.previewUrl,
                     soundcloudUrl: t.soundcloudUrl,
                     isSoundCloud: !!t.soundcloud_data
-                })));
+                }));
+                console.log('Search results from API:', data.results);
+                console.log('Mapped search results:', mappedResults);
+                setResults(mappedResults);
             }
         } catch (err) {
             console.error("Search Error:", err);
         } finally { setSearching(false); }
     };
 
-    const handleSelect = (s) => setSelected(s);
+    const handleSelect = (s) => {
+        console.log('Song selected:', s);
+        setSelected(s);
+    };
     const handleSubmit = () => {
         console.log('Selected song:', selected);
         if (mode === 'TOP_4' || mode === 'PLAYLIST_ADD') { onSubmitReview(selected); }
