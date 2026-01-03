@@ -14,6 +14,28 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
         appleMusicUrl: null,
         spotifyUrl: `https://open.spotify.com/search/${encodeURIComponent(post.artist_name + ' ' + post.song_name)}`
     });
+    const [wikiSummary, setWikiSummary] = useState(null);
+    const [vibeProfile, setVibeProfile] = useState(null);
+
+    const LASTFM_API_KEY = 'YOUR_LASTFM_KEY'; // User should replace this
+
+    const generateVibeProfile = (genre, year) => {
+        const vibes = {
+            'Rock': 'Raw, energetic, and built for the stage. This track carries a driving spirit.',
+            'Pop': 'Polished, melodic, and designed to stay with you. A classic earworm vibe.',
+            'Electronic': 'Synthetic textures meets rhythmic precision. Pulsating with modern energy.',
+            'Jazz': 'Complex harmonies and smooth rhythms. A sophisticated, late-night atmosphere.',
+            'Soul': 'Deeply emotive and warm. Built on a foundation of organic groove.',
+            'Hip-Hop': 'Bold rhythmic focus and lyrical presence. Grounded in street-ready energy.',
+            'Alternative': 'Boundary-pushing and introspective. A track for the curious listener.',
+            'Classical': 'Timeless structure and rich orchestration. An elegant, grand experience.'
+        };
+
+        const mood = vibes[genre] || vibes[Object.keys(vibes).find(k => genre.includes(k))] || 'A versatile track with a unique perspective on modern music.';
+        const era = parseInt(year) < 2000 ? 'A vintage gem that still resonates today.' : 'A contemporary sound that speaks to the now.';
+
+        return `${mood} ${era}`;
+    };
 
     useEffect(() => {
         const fetchExtra = async () => {
@@ -23,23 +45,44 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                 ? `https://itunes.apple.com/search?term=${query}&media=music&entity=song&limit=1`
                 : `/api/search?q=${query}`;
 
-            const res = await fetch(url);
-            const data = await res.json();
-            if (data.results?.[0]) {
-                const track = data.results[0];
-                if (track.previewUrl && !previewUrl) setPreviewUrl(track.previewUrl);
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+                if (data.results?.[0]) {
+                    const track = data.results[0];
+                    if (track.previewUrl && !previewUrl) setPreviewUrl(track.previewUrl);
 
-                const minutes = Math.floor(track.trackTimeMillis / 60000);
-                const seconds = ((track.trackTimeMillis % 60000) / 1000).toFixed(0);
+                    const minutes = Math.floor(track.trackTimeMillis / 60000);
+                    const seconds = ((track.trackTimeMillis % 60000) / 1000).toFixed(0);
 
-                setExtraInfo(prev => ({
-                    ...prev,
-                    year: track.releaseDate ? new Date(track.releaseDate).getFullYear() : '----',
-                    genre: track.primaryGenreName || 'Music',
-                    duration: `${minutes}:${seconds.padStart(2, '0')}`,
-                    album: track.collectionName || 'their latest project',
-                    appleMusicUrl: track.trackViewUrl
-                }));
+                    const year = track.releaseDate ? new Date(track.releaseDate).getFullYear() : '----';
+                    const genre = track.primaryGenreName || 'Music';
+
+                    setExtraInfo(prev => ({
+                        ...prev,
+                        year,
+                        genre,
+                        duration: `${minutes}:${seconds.padStart(2, '0')}`,
+                        album: track.collectionName || 'their latest project',
+                        appleMusicUrl: track.trackViewUrl
+                    }));
+
+                    // Fallback Vibe Profile
+                    setVibeProfile(generateVibeProfile(genre, year));
+                }
+            } catch (e) { console.error(e); }
+
+            // Fetch Last.fm Wiki
+            if (LASTFM_API_KEY && LASTFM_API_KEY !== 'YOUR_LASTFM_KEY') {
+                try {
+                    const lfmRes = await fetch(`https://ws.audioscrobbler.com/2.0/?method=track.getInfo&api_key=${LASTFM_API_KEY}&artist=${encodeURIComponent(post.artist_name)}&track=${encodeURIComponent(post.song_name)}&format=json`);
+                    const lfmData = await lfmRes.json();
+                    if (lfmData.track?.wiki?.summary) {
+                        setWikiSummary(lfmData.track.wiki.summary.split('<a')[0]); // Strip the Last.fm credit link
+                    }
+                } catch (e) {
+                    console.error("Last.fm Error:", e);
+                }
             }
         };
         fetchExtra();
@@ -159,12 +202,20 @@ const SongDetailView = ({ post, onBack, allPosts, currentUser, onRate, onAddToPl
                         </div>
                     )}
 
-                    {/* Dynamic Description */}
-                    <div className="text-gray-400 leading-relaxed italic text-lg line-clamp-4">
-                        '{post.song_name}' is a standout {extraInfo.genre.toLowerCase()} track by {post.artist_name},
-                        featured on the project <span className="text-white">"{extraInfo.album}"</span>.
-                        Released in {extraInfo.year}, the song spans {extraInfo.duration} and has been
-                        sparking conversation across the Grapevine community with {songReviews.length} curated reviews.
+                    {/* Wiki/Vibe Description */}
+                    <div className="text-gray-400 leading-relaxed italic text-lg">
+                        {wikiSummary ? (
+                            <div className="line-clamp-6" dangerouslySetInnerHTML={{ __html: wikiSummary }} />
+                        ) : (
+                            <div>
+                                <span className="text-lime-400 font-bold uppercase text-xs tracking-widest block mb-2">The Vibe</span>
+                                <p className="line-clamp-4">{vibeProfile || `Searching for the perfect words...`}</p>
+                            </div>
+                        )}
+                        <div className="mt-4 text-sm not-italic opacity-60">
+                            '{post.song_name}' by {post.artist_name} is a {extraInfo.genre.toLowerCase()} standout
+                            from {extraInfo.year}, featured on "{extraInfo.album}".
+                        </div>
                     </div>
 
                     {/* Ratings Section */}
