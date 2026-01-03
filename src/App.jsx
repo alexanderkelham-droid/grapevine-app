@@ -204,7 +204,12 @@ function App() {
             if (activePlaylist) fetchPlaylistItems(activePlaylist.id);
         } else {
             const p = { ...data, user_id: session.user.id, user_name: session.user.user_metadata.full_name || 'User' };
-            if (supabase) await supabase.from('posts').upsert(p, { onConflict: 'user_id, song_name, artist_name' });
+            console.log('Submitting post to database:', p);
+            if (supabase) {
+                const { data: result, error } = await supabase.from('posts').upsert(p, { onConflict: 'user_id, song_name, artist_name' });
+                if (error) console.error('Database error:', error);
+                else console.log('Post saved successfully:', result);
+            }
             setToastMessage(data.id ? "Review updated!" : "Review posted!");
             fetchPosts();
         }

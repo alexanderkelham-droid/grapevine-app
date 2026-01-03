@@ -64,9 +64,10 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
 
     const handleSelect = (s) => setSelected(s);
     const handleSubmit = () => {
+        console.log('Selected song:', selected);
         if (mode === 'TOP_4' || mode === 'PLAYLIST_ADD') { onSubmitReview(selected); }
         else {
-            onSubmitReview({
+            const reviewData = {
                 id: preSelectedSong?.id,
                 song_name: selected.title,
                 artist_name: selected.artist,
@@ -75,7 +76,9 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                 soundcloud_url: selected.soundcloudUrl,
                 rating,
                 caption: comment
-            });
+            };
+            console.log('Submitting review:', reviewData);
+            onSubmitReview(reviewData);
         }
         onClose();
     };
