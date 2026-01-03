@@ -1,3 +1,5 @@
+const CACHE_VERSION = 'v1.0.1';
+
 self.addEventListener('push', (event) => {
     const data = event.data ? event.data.json() : { title: 'Grapevine', body: 'New activity on Grapevine!' };
 
@@ -20,5 +22,20 @@ self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     event.waitUntil(
         clients.openWindow(event.notification.data.url)
+    );
+});
+
+// Force service worker update on version change
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (cacheName !== CACHE_VERSION) {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
     );
 });
