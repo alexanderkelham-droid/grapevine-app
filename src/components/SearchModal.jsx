@@ -22,17 +22,27 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                 });
                 setRating(preSelectedSong.rating || 0);
                 setComment(preSelectedSong.caption || '');
-            } else { setSelected(null); setRating(0); setComment(''); setQuery(''); setResults([]); }
+                setSoundcloudUrlFromSearch(preSelectedSong.soundcloud_url || null);
+            } else { 
+                setSelected(null); 
+                setRating(0); 
+                setComment(''); 
+                setQuery(''); 
+                setResults([]);
+                setSoundcloudUrlFromSearch(null);
+            }
         }
     }, [isOpen, preSelectedSong]);
 
     const handleSearch = async (e) => {
         const val = e.target.value;
+        console.log('handleSearch called with value:', val);
         setQuery(val);
         if (val.length < 2) return;
 
         // Store SoundCloud URL immediately
         const isSoundCloudLink = val.includes('soundcloud.com/') || val.includes('on.soundcloud.com/');
+        console.log('Is SoundCloud link?', isSoundCloudLink);
         if (isSoundCloudLink) {
             setSoundcloudUrlFromSearch(val);
             console.log('SoundCloud URL detected and stored:', val);
@@ -113,7 +123,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                     </div>
                     {!selected ? (
                         <div className="space-y-4">
-                            <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} /><input type="text" autoFocus value={query} onChange={handleSearch} placeholder="Search for a song..." className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition" /></div>
+                            <div className="relative"><Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={20} /><input type="text" autoFocus value={query} onChange={handleSearch} onPaste={(e) => { console.log('Pasted text:', e.clipboardData.getData('text')); }} placeholder="Search for a song..." className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-lime-400 focus:ring-1 focus:ring-lime-400 transition" /></div>
                             <div className="max-h-80 overflow-y-auto space-y-2 custom-scrollbar">
                                 {searching ? <div className="py-12 flex justify-center"><Loader2 className="animate-spin text-lime-400" size={32} /></div> : results.map(s => (<div key={s.id} onClick={() => handleSelect(s)} className="flex items-center gap-4 p-3 hover:bg-white/5 rounded-2xl cursor-pointer transition group border border-transparent hover:border-white/5"><img src={s.albumCover} className="w-14 h-14 rounded-xl shadow-lg" /><div className="flex-1 min-w-0"><h3 className="font-bold text-white truncate group-hover:text-lime-400 transition">{s.title}</h3><p className="text-sm text-gray-500 truncate">{s.artist}</p></div><Music size={18} className="text-gray-700 group-hover:text-lime-400" /></div>))}
                             </div>
