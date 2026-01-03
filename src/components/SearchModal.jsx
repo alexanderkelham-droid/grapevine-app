@@ -8,6 +8,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
     const [selected, setSelected] = useState(null);
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
+    const [soundcloudUrlFromSearch, setSoundcloudUrlFromSearch] = useState(null);
 
     useEffect(() => {
         if (isOpen) {
@@ -30,10 +31,18 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
         setQuery(val);
         if (val.length < 2) return;
 
+        // Store SoundCloud URL immediately
+        const isSoundCloudLink = val.includes('soundcloud.com/') || val.includes('on.soundcloud.com/');
+        if (isSoundCloudLink) {
+            setSoundcloudUrlFromSearch(val);
+            console.log('SoundCloud URL detected and stored:', val);
+        } else {
+            setSoundcloudUrlFromSearch(null);
+        }
+
         setSearching(true);
         try {
             const isLocal = window.location.hostname === 'localhost';
-            const isSoundCloudLink = val.includes('soundcloud.com/') || val.includes('on.soundcloud.com/');
 
             // If it's a SoundCloud link, we MUST use the API to avoid CORS
             const url = (isLocal && !isSoundCloudLink)
@@ -71,6 +80,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
     };
     const handleSubmit = () => {
         console.log('Selected song:', selected);
+        console.log('SoundCloud URL from search:', soundcloudUrlFromSearch);
         if (mode === 'TOP_4' || mode === 'PLAYLIST_ADD') { onSubmitReview(selected); }
         else {
             const reviewData = {
@@ -79,7 +89,7 @@ const SearchModal = ({ isOpen, onClose, onSubmitReview, mode = 'REVIEW', preSele
                 artist_name: selected.artist,
                 album_art_url: selected.albumCover,
                 preview_url: selected.previewUrl,
-                soundcloud_url: selected.soundcloudUrl,
+                soundcloud_url: soundcloudUrlFromSearch || selected.soundcloudUrl, // Use stored URL first
                 rating,
                 caption: comment
             };
